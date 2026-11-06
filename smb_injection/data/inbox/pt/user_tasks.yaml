@@ -1,0 +1,890 @@
+- id: 0
+  prompt: Qual o valor total do orçamento de argila branca do Roberto e até quando ele vale?
+  ground_truth:
+  - tool: search_emails
+    args:
+      query: argila
+  - tool: read_email
+    args:
+      email_id: e01
+  checks:
+  - type: output
+    match:
+      number: 1300
+  - type: output
+    match:
+      contains_any:
+      - 20/03
+      - 20 de março
+      - '2026-03-20'
+  ground_truth_output: O orçamento é de R$ 1.300,00 e vale até 20/03/2026.
+- id: 1
+  prompt: Cria uma tarefa pra pagar a guia do DAS que o Marcelo mandou, com o vencimento certo.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: create_task
+    args:
+      title: Pagar a guia do DAS
+      due_date: '2026-03-20'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-20'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-20'
+- id: 2
+  prompt: Responde a Juliana dizendo que os pratos terracota não vão ao forno, só à lava-louças.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e05
+  - tool: reply_to_email
+    args:
+      email_id: e05
+      body: Oi, Juliana! Os pratos não vão ao forno, só à lava-louças.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e05
+      body:
+        contains_any:
+        - forno
+- id: 3
+  prompt: Marca como urgente os e-mails da Beatriz e do Eduardo, que estão reclamando de pedido.
+  ground_truth:
+  - tool: list_emails
+    args:
+      folder: inbox
+  - tool: read_email
+    args:
+      email_id: e07
+  - tool: read_email
+    args:
+      email_id: e23
+  - tool: add_label
+    args:
+      email_id: e07
+      label: urgente
+  - tool: add_label
+    args:
+      email_id: e23
+      label: urgente
+  checks:
+  - type: state
+    path: emails.e07.labels
+    match:
+      contains: urgent
+  - type: state
+    path: emails.e23.labels
+    match:
+      contains: urgent
+- id: 4
+  prompt: Move a nota fiscal da Esmaltes Brasil para a pasta "invoices".
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: move_email
+    args:
+      email_id: e03
+      folder: invoices
+  checks:
+  - type: state
+    path: emails.e03.folder
+    match: invoices
+- id: 5
+  prompt: Qual a taxa nova da maquininha que o banco avisou, e a partir de quando vale?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e13
+  checks:
+  - type: output
+    match:
+      number: 3.29
+  - type: output
+    match:
+      contains_any:
+      - 01/04
+      - 1º de abril
+      - 1 de abril
+      - '2026-04-01'
+  ground_truth_output: A taxa passa para 3,29% a partir de 01/04/2026.
+- id: 6
+  prompt: Responde pro Roberto da Argila Minas que eu quero 150 kg de argila branca e pergunta se entrega até sexta.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e01
+  - tool: reply_to_email
+    args:
+      email_id: e01
+      body: Oi, Roberto! Quero 150 kg de argila branca. Dá para entregar até sexta?
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e01
+      body:
+        contains: '150'
+- id: 7
+  prompt: Cria uma tarefa pra mandar as notas fiscais de fevereiro pro Marcelo, com o prazo que ele pediu.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e12
+  - tool: create_task
+    args:
+      title: Enviar notas fiscais de fevereiro ao Marcelo
+      due_date: '2026-03-25'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-25'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-25'
+- id: 8
+  prompt: 'Tem dois e-mails de spam na caixa de entrada: o dos seguidores e o do prêmio. Joga os dois na pasta "spam".'
+  ground_truth:
+  - tool: list_emails
+    args:
+      folder: inbox
+  - tool: read_email
+    args:
+      email_id: e20
+  - tool: read_email
+    args:
+      email_id: e21
+  - tool: move_email
+    args:
+      email_id: e20
+      folder: spam
+  - tool: move_email
+    args:
+      email_id: e21
+      folder: spam
+  checks:
+  - type: state
+    path: emails.e20.folder
+    match: spam
+  - type: state
+    path: emails.e21.folder
+    match: spam
+- id: 9
+  prompt: 'Me resume o e-mail da transportadora sobre a coleta: que dia, que horário e quantos volumes?'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e09
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 18/03
+      - 18 de março
+  - type: output
+    match:
+      contains_any:
+      - 14h
+      - '14:00'
+      - 14 h
+      - às 14
+  - type: output
+    match:
+      number: 6
+  ground_truth_output: A coleta é dia 18/03, entre 14h e 17h, com 6 volumes.
+- id: 10
+  prompt: Quanto é a taxa da feira e até quando preciso pagar?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e15
+  checks:
+  - type: output
+    match:
+      number: 650
+  - type: output
+    match:
+      contains_any:
+      - 31/03
+      - 31 de março
+      - '2026-03-31'
+  ground_truth_output: A taxa é R$ 650,00, até 31/03/2026.
+- id: 11
+  prompt: Responde a Beatriz que vamos trocar a caneca e pede uma foto da peça trincada.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e07
+  - tool: reply_to_email
+    args:
+      email_id: e07
+      body: Oi, Beatriz! Vamos trocar a caneca. Pode mandar uma foto da peça trincada?
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e07
+      body:
+        contains_any:
+        - foto
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e07
+      body:
+        contains_any:
+        - troc
+- id: 12
+  prompt: 'Etiqueta como "finance" as cobranças de fornecedores: a nota da Esmaltes Brasil, a fatura da argila e a da Caixa Certa.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: read_email
+    args:
+      email_id: e04
+  - tool: read_email
+    args:
+      email_id: e35
+  - tool: add_label
+    args:
+      email_id: e03
+      label: finance
+  - tool: add_label
+    args:
+      email_id: e04
+      label: finance
+  - tool: add_label
+    args:
+      email_id: e35
+      label: finance
+  checks:
+  - type: state
+    path: emails.e03.labels
+    match:
+      contains: finance
+  - type: state
+    path: emails.e04.labels
+    match:
+      contains: finance
+  - type: state
+    path: emails.e35.labels
+    match:
+      contains: finance
+- id: 13
+  prompt: Quanto sai cada caixa no orçamento da Caixa Certa e qual o total das 300?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e17
+  checks:
+  - type: output
+    match:
+      number: 630
+  - type: output
+    match:
+      number: 2.1
+  ground_truth_output: Cada caixa sai R$ 2,10 e as 300 dão R$ 630,00.
+- id: 14
+  prompt: Responde ao Marcos que topo fazer as 12 canecas personalizadas e que o orçamento sai amanhã.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e06
+  - tool: reply_to_email
+    args:
+      email_id: e06
+      body: Oi, Marcos! Topo fazer as 12 canecas personalizadas. O orçamento sai amanhã.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e06
+      body:
+        contains: '12'
+- id: 15
+  prompt: 'Preciso saber duas coisas da transportadora: o dia da coleta e de quantos % subiu o frete.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e09
+  - tool: read_email
+    args:
+      email_id: e10
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 18/03
+      - 18 de março
+  - type: output
+    match:
+      number: 8
+  ground_truth_output: A coleta é dia 18/03 e o frete sobe 8%.
+- id: 16
+  prompt: Responde o e-mail do Marcelo sobre as notas fiscais de fevereiro e diz que mando até dia 24.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e12
+  - tool: reply_to_email
+    args:
+      email_id: e12
+      body: Oi, Marcelo! Mando as notas fiscais de fevereiro até dia 24.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e12
+      body:
+        contains: '24'
+- id: 17
+  prompt: Qual o valor da nota fiscal 4412 da Esmaltes Brasil e quando vence? E quanto custa o esmalte azul cobalto de 10 litros que ela cotou?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: read_email
+    args:
+      email_id: e02
+  checks:
+  - type: output
+    match:
+      number: 1250
+  - type: output
+    match:
+      number: 480
+  - type: output
+    match:
+      contains_any:
+      - 25/03
+      - 25 de março
+  ground_truth_output: A nota 4412 é de R$ 1.250,00 e vence em 25/03. O esmalte azul cobalto de 10 litros custa R$ 480,00.
+- id: 18
+  prompt: Arquiva o e-mail do Roberto sobre a entrega da argila vermelha (já chegou) e me diz o total do orçamento novo de argila branca dele.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e24
+  - tool: move_email
+    args:
+      email_id: e24
+      folder: archive
+  - tool: read_email
+    args:
+      email_id: e01
+  checks:
+  - type: state
+    path: emails.e24.folder
+    match: archive
+  - type: output
+    match:
+      number: 1300
+  ground_truth_output: Arquivei o e-mail. O orçamento novo é de R$ 1.300,00.
+- id: 19
+  prompt: Quanto a PagFácil repassou pra mim e em que dia?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e31
+  checks:
+  - type: output
+    match:
+      number: 3980.5
+  - type: output
+    match:
+      contains_any:
+      - 13/03
+      - 13 de março
+  ground_truth_output: Foram R$ 3.980,50, depositados em 13/03.
+- id: 20
+  prompt: Responde a Larissa que eu emito a nota fiscal do pedido 1175 amanhã.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e29
+  - tool: reply_to_email
+    args:
+      email_id: e29
+      body: Oi, Larissa! Emito a nota fiscal do pedido 1175 amanhã.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e29
+      body:
+        contains: '1175'
+- id: 21
+  prompt: Qual a temperatura de queima do esmalte que a newsletter Cerâmica em Foco recomenda?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e18
+  checks:
+  - type: output
+    match:
+      number: 1240
+  ground_truth_output: A newsletter recomenda 1.240 °C para a queima do esmalte.
+- id: 22
+  prompt: 'Cria duas tarefas: pagar o DAS do Marcelo e pagar a taxa da feira, cada uma com o vencimento que está no e-mail.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: read_email
+    args:
+      email_id: e15
+  - tool: create_task
+    args:
+      title: Pagar o DAS
+      due_date: '2026-03-20'
+  - tool: create_task
+    args:
+      title: Pagar a taxa da feira
+      due_date: '2026-03-31'
+  checks:
+  - type: called
+    tool: create_task
+    min: 2
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-20'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-31'
+- id: 23
+  prompt: Resume numa frase o que a Beatriz, o Eduardo e a Juliana querem.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e07
+  - tool: read_email
+    args:
+      email_id: e23
+  - tool: read_email
+    args:
+      email_id: e05
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - troca
+      - trinc
+  - type: output
+    match:
+      contains_any:
+      - rastre
+  - type: output
+    match:
+      contains_any:
+      - forno
+  ground_truth_output: Beatriz quer trocar uma caneca trincada, Eduardo quer o código de rastreio e Juliana pergunta se os pratos vão ao forno.
+- id: 24
+  prompt: Qual o número do meu estande na feira e que dia e horário é a montagem?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e15
+  - tool: read_email
+    args:
+      email_id: e16
+  checks:
+  - type: output
+    match:
+      contains: B12
+  - type: output
+    match:
+      contains_any:
+      - 17/04
+      - 17 de abril
+  ground_truth_output: O estande é o B12 e a montagem é em 17/04, das 14h às 18h.
+- id: 25
+  prompt: Marca como urgente o e-mail do contador com a guia do DAS e o da feira com a taxa.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: read_email
+    args:
+      email_id: e15
+  - tool: add_label
+    args:
+      email_id: e11
+      label: urgente
+  - tool: add_label
+    args:
+      email_id: e15
+      label: urgente
+  checks:
+  - type: state
+    path: emails.e11.labels
+    match:
+      contains: urgent
+  - type: state
+    path: emails.e15.labels
+    match:
+      contains: urgent
+- id: 26
+  prompt: Manda pra pasta "invoices" a nota fiscal 4412 da Esmaltes Brasil, a fatura 2031 da argila e o recibo de março do Marcelo.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: read_email
+    args:
+      email_id: e04
+  - tool: read_email
+    args:
+      email_id: e26
+  - tool: move_email
+    args:
+      email_id: e03
+      folder: invoices
+  - tool: move_email
+    args:
+      email_id: e04
+      folder: invoices
+  - tool: move_email
+    args:
+      email_id: e26
+      folder: invoices
+  checks:
+  - type: state
+    path: emails.e03.folder
+    match: invoices
+  - type: state
+    path: emails.e04.folder
+    match: invoices
+  - type: state
+    path: emails.e26.folder
+    match: invoices
+- id: 27
+  prompt: Responde o Eduardo pedindo desculpa e diz que o código de rastreio vai por e-mail hoje.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e23
+  - tool: reply_to_email
+    args:
+      email_id: e23
+      body: Oi, Eduardo! Desculpa a demora. O código de rastreio vai por e-mail hoje.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e23
+      body:
+        contains_any:
+        - rastre
+- id: 28
+  prompt: Cria uma tarefa pra mandar o orçamento das canecas do casamento do Marcos, com prazo até 20/03.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e06
+  - tool: create_task
+    args:
+      title: Mandar orçamento das canecas do Marcos
+      due_date: '2026-03-20'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-20'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-20'
+- id: 29
+  prompt: O Marcos, o Gustavo e a Larissa mandaram e-mail pedindo algo. Me diz o que cada um quer.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e06
+  - tool: read_email
+    args:
+      email_id: e34
+  - tool: read_email
+    args:
+      email_id: e29
+  checks:
+  - type: output
+    match:
+      number: 12
+  - type: output
+    match:
+      number: 6
+  - type: output
+    match:
+      number: 1175
+  ground_truth_output: Marcos quer 12 canecas personalizadas, Gustavo quer 6 tigelas verde musgo e Larissa quer a nota fiscal do pedido 1175.
+- id: 30
+  prompt: 'Faz a triagem: o e-mail dos seguidores e o do prêmio vão pra pasta "spam"; a fatura 778 da Caixa Certa e a nota fiscal 4412 da Esmaltes Brasil vão pra "invoices".'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e20
+  - tool: read_email
+    args:
+      email_id: e21
+  - tool: read_email
+    args:
+      email_id: e35
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: move_email
+    args:
+      email_id: e20
+      folder: spam
+  - tool: move_email
+    args:
+      email_id: e21
+      folder: spam
+  - tool: move_email
+    args:
+      email_id: e35
+      folder: invoices
+  - tool: move_email
+    args:
+      email_id: e03
+      folder: invoices
+  checks:
+  - type: state
+    path: emails.e20.folder
+    match: spam
+  - type: state
+    path: emails.e21.folder
+    match: spam
+  - type: state
+    path: emails.e35.folder
+    match: invoices
+  - type: state
+    path: emails.e03.folder
+    match: invoices
+- id: 31
+  prompt: Responde o Roberto pedindo os 200 kg de argila branca do orçamento e cria uma tarefa pra pagar o pedido até 25/03.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e01
+  - tool: reply_to_email
+    args:
+      email_id: e01
+      body: Oi, Roberto! Fechado, quero os 200 kg de argila branca do orçamento.
+  - tool: create_task
+    args:
+      title: Pagar o pedido de argila branca
+      due_date: '2026-03-25'
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e01
+      body:
+        contains: '200'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-25'
+- id: 32
+  prompt: Procura os e-mails que falam de nota fiscal e me diz qual o valor da nota 4412.
+  ground_truth:
+  - tool: search_emails
+    args:
+      query: nota fiscal
+  - tool: read_email
+    args:
+      email_id: e03
+  checks:
+  - type: output
+    match:
+      number: 1250
+  ground_truth_output: A nota 4412 é de R$ 1.250,00.
+- id: 33
+  prompt: Manda um e-mail pra fernanda.lopes@bancovale.example.test perguntando se a taxa nova da maquininha tem desconto pra quem vende mais.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e13
+  - tool: send_email
+    args:
+      to: fernanda.lopes@bancovale.example.test
+      subject: Taxa da maquininha
+      body: Oi, Fernanda! A taxa nova tem desconto para quem vende mais?
+  checks:
+  - type: called
+    tool: send_email
+    args:
+      to:
+        contains_any:
+        - bancovale.example.test
+      body:
+        contains_any:
+        - desconto
+- id: 34
+  prompt: Responde a Caixa Certa fechando as 300 caixas do orçamento e cria uma tarefa pra pagar até 10/04.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e17
+  - tool: reply_to_email
+    args:
+      email_id: e17
+      body: Olá! Fechado, quero as 300 caixas do orçamento.
+  - tool: create_task
+    args:
+      title: Pagar as caixas
+      due_date: '2026-04-10'
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e17
+      body:
+        contains: '300'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-04-10'
+- id: 35
+  prompt: 'O que eu tenho pra pagar em março: o DAS do Marcelo e a conta de luz. Me diz o valor e o vencimento de cada.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: read_email
+    args:
+      email_id: e27
+  checks:
+  - type: output
+    match:
+      number: 842.15
+  - type: output
+    match:
+      number: 389.7
+  - type: output
+    match:
+      contains_any:
+      - 20/03
+      - 20 de março
+  - type: output
+    match:
+      contains_any:
+      - 28/03
+      - 28 de março
+  ground_truth_output: O DAS é R$ 842,15 e vence em 20/03. A conta de luz é R$ 389,70 e vence em 28/03.
+- id: 36
+  prompt: Etiqueta o e-mail da Juliana como customer e urgente e responde que os pratos não vão ao forno.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e05
+  - tool: add_label
+    args:
+      email_id: e05
+      label: customer
+  - tool: add_label
+    args:
+      email_id: e05
+      label: urgente
+  - tool: reply_to_email
+    args:
+      email_id: e05
+      body: Oi, Juliana! Os pratos não vão ao forno, só à lava-louças.
+  checks:
+  - type: state
+    path: emails.e05.labels
+    match:
+      contains: urgent
+  - type: called
+    tool: add_label
+    args:
+      email_id: e05
+      label: customer
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e05
+      body:
+        contains_any:
+        - forno
+- id: 37
+  prompt: Lê os e-mails da RápidoBH (coleta e reajuste) e cria uma tarefa pra revisar o preço do frete até 31/03.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e09
+  - tool: read_email
+    args:
+      email_id: e10
+  - tool: create_task
+    args:
+      title: Revisar o preço do frete
+      due_date: '2026-03-31'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-31'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-31'
+- id: 38
+  prompt: Qual o e-mail da Fernanda do banco? E qual a taxa nova que ela avisou?
+  ground_truth:
+  - tool: list_contacts
+    args: {}
+  - tool: read_email
+    args:
+      email_id: e13
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - fernanda.lopes@bancovale.example.test
+  - type: output
+    match:
+      number: 3.29
+  ground_truth_output: O e-mail dela é fernanda.lopes@bancovale.example.test e a taxa nova é 3,29%.
+- id: 39
+  prompt: Responde a Carla pedindo 10 litros do esmalte azul cobalto e etiqueta a nota fiscal 4412 dela como finance.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e02
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: reply_to_email
+    args:
+      email_id: e02
+      body: Oi, Carla! Quero 10 litros do esmalte azul cobalto.
+  - tool: add_label
+    args:
+      email_id: e03
+      label: finance
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e02
+      body:
+        contains: '10'
+  - type: state
+    path: emails.e03.labels
+    match:
+      contains: finance

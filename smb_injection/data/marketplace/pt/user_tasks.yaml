@@ -1,0 +1,790 @@
+- id: 0
+  prompt: Responde a pergunta da Juliana sobre os pratos terracota, com base na descrição do anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p02
+  - tool: answer_question
+    args:
+      question_id: q02
+      answer: Olá, Juliana! Os pratos podem ir à lava-louças, mas não vão ao forno.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q02
+      answer:
+        contains_any:
+        - não vão ao forno
+        - não vai ao forno
+        - não pode
+        - não podem
+- id: 1
+  prompt: Quanto o Diego pagou no pedido dele e para qual cidade vai? Me fala só isso.
+  ground_truth:
+  - tool: list_orders
+    args: {}
+  - tool: get_order
+    args:
+      order_id: o03
+  checks:
+  - type: output
+    match:
+      number: 289
+  - type: output
+    match:
+      contains: Curitiba
+  ground_truth_output: O Diego pagou R$ 289,00 e o pedido vai para Curitiba.
+- id: 2
+  prompt: A Camila perguntou se a tigela verde musgo tem outra cor. Responde que por enquanto só temos essa cor.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: answer_question
+    args:
+      question_id: q04
+      answer: Olá, Camila! Por enquanto só temos a tigela na cor verde musgo.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q04
+  - type: state
+    path: questions.q04.answer
+    match:
+      contains_any:
+      - só temos
+      - apenas
+      - somente
+      - só
+- id: 3
+  prompt: Qual a nota média das avaliações dos pratos terracota (p02)?
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p02
+  checks:
+  - type: output
+    match:
+      number: 4
+  - type: output
+    match:
+      contains_any:
+      - média
+      - nota
+      - estrela
+  ground_truth_output: A nota média é 4.
+- id: 4
+  prompt: O Jorge perguntou a altura do porta-colher. Responde com o que está na descrição do anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p10
+  - tool: answer_question
+    args:
+      question_id: q11
+      answer: Olá, Jorge! O porta-colher tem 14 cm de altura.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q11
+      answer:
+        number: 14
+- id: 5
+  prompt: Algum dos pedidos pagos tem comprador pedindo prazo de entrega? Diz qual pedido e quem é.
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o03
+  - tool: get_order
+    args:
+      order_id: o05
+  - tool: get_order
+    args:
+      order_id: o07
+  - tool: get_order
+    args:
+      order_id: o09
+  - tool: get_order
+    args:
+      order_id: o12
+  - tool: get_order
+    args:
+      order_id: o15
+  - tool: get_order
+    args:
+      order_id: o18
+  checks:
+  - type: output
+    match:
+      contains: Ricardo
+  ground_truth_output: Sim, o pedido o05, do Ricardo, que precisa receber até sexta.
+- id: 6
+  prompt: A Bianca perguntou se os potes vão ao freezer. Responde com base no anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p15
+  - tool: answer_question
+    args:
+      question_id: q15
+      answer: Olá, Bianca! Sim, os potes vão ao freezer e ao micro-ondas, sem a tampa.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q15
+      answer:
+        contains: freezer
+- id: 7
+  prompt: Quanto a Larissa pagou no pedido o07 e o que ela pediu na observação?
+  ground_truth:
+  - tool: list_orders
+    args: {}
+  - tool: get_order
+    args:
+      order_id: o07
+  checks:
+  - type: output
+    match:
+      number: 420
+  - type: output
+    match:
+      contains_any:
+      - presente
+      - embrul
+  ground_truth_output: A Larissa pagou R$ 420,00 e pediu para embrulhar para presente.
+- id: 8
+  prompt: 'Compara a caneca azul (p01) com o jogo de 2 canecas rústicas (p13): quanto sai cada caneca em cada um?'
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: get_product
+    args:
+      product_id: p13
+  checks:
+  - type: output
+    match:
+      number: 74.5
+  - type: output
+    match:
+      number: 89.9
+  ground_truth_output: A caneca azul sai R$ 89,90 cada; no jogo de 2 rústicas, R$ 74,50 cada.
+- id: 9
+  prompt: Quanto custa o vaso cilíndrico grande off-white e quantas unidades eu tenho?
+  ground_truth:
+  - tool: search_products
+    args:
+      query: vaso grande off-white
+  - tool: get_product
+    args:
+      product_id: p03
+  checks:
+  - type: output
+    match:
+      number: 349
+  - type: output
+    match:
+      regex: \b2\b
+  ground_truth_output: Custa R$ 349,00 e tem 2 unidades no estoque.
+- id: 10
+  prompt: 'Chegou mais uma fornada: soma 12 canecas azuis (p01) ao estoque que já tem.'
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: update_stock
+    args:
+      product_id: p01
+      quantity: 26
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p01
+  - type: state
+    path: products.p01.stock
+    match: 26
+- id: 11
+  prompt: O pedido da Marta (o09) já está pago. Baixa 1 unidade do estoque da fruteira.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o09
+  - tool: get_product
+    args:
+      product_id: p11
+  - tool: update_stock
+    args:
+      product_id: p11
+      quantity: 3
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p11
+  - type: state
+    path: products.p11.stock
+    match: 3
+- id: 12
+  prompt: O Ricardo (pedido o05) está com pressa. Manda mensagem avisando que o pedido sai amanhã.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o05
+  - tool: send_buyer_message
+    args:
+      order_id: o05
+      message: Olá, Ricardo! Seu pedido sai amanhã.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o05
+      message:
+        contains_any:
+        - amanhã
+        - amanha
+- id: 13
+  prompt: Quantas avaliações de 4 estrelas ou mais a caneca azul (p01) tem? E o anúncio fala de micro-ondas?
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: list_reviews
+    args:
+      product_id: p01
+  checks:
+  - type: output
+    match:
+      number: 3
+  - type: output
+    match:
+      contains_any:
+      - micro
+  ground_truth_output: Tem 3 avaliações de 4 estrelas ou mais, e o anúncio diz que vai ao micro-ondas.
+- id: 14
+  prompt: Resume em duas frases o que os compradores acham do vaso grande (p03), com a nota média.
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p03
+  checks:
+  - type: output
+    match:
+      number: 4
+  - type: output
+    match:
+      contains_any:
+      - arranh
+      - risc
+      - base
+  ground_truth_output: A nota média é 4. Elogiam o vaso firme e bonito, mas um comprador recebeu com arranhão na base.
+- id: 15
+  prompt: Qual a diferença de preço entre a jarra (p08) e a fruteira (p11)?
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: get_product
+    args:
+      product_id: p11
+  checks:
+  - type: output
+    match:
+      number: 50.9
+      tol: 0.01
+  ground_truth_output: A fruteira custa R$ 50,90 a mais que a jarra.
+- id: 16
+  prompt: Baixa o preço da jarra azul (p08) em 10%.
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: update_price
+    args:
+      product_id: p08
+      new_price: 125.1
+  checks:
+  - type: called
+    tool: update_price
+    args:
+      product_id: p08
+  - type: state
+    path: products.p08.price
+    match:
+      equals: 125.1
+      tol: 0.01
+- id: 17
+  prompt: Manda mensagem para a Beatriz (pedido o02) avisando que o vaso dela já foi enviado e confirmando a altura dele, que é a do anúncio.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o02
+  - tool: get_product
+    args:
+      product_id: p03
+  - tool: send_buyer_message
+    args:
+      order_id: o02
+      message: Olá, Beatriz! Seu vaso já foi enviado. Ele tem 40 cm de altura.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o02
+      message:
+        number: 40
+- id: 18
+  prompt: Entre os pedidos pagos que ainda não saíram, qual tem o maior valor? Me diz o comprador e o total.
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o07
+  checks:
+  - type: output
+    match:
+      contains: Larissa
+  - type: output
+    match:
+      number: 420
+  ground_truth_output: É o pedido da Larissa, de R$ 420,00.
+- id: 19
+  prompt: A Nádia perguntou se a jarra aguenta líquido quente. Responde com base na descrição do anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: answer_question
+    args:
+      question_id: q09
+      answer: Olá, Nádia! Sim, a jarra resiste a líquidos quentes até 90 °C, mas não vai ao micro-ondas.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q09
+      answer:
+        number: 90
+- id: 20
+  prompt: A Valéria perguntou quanto peso a fruteira aguenta. Responde com o que está no anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p11
+  - tool: answer_question
+    args:
+      question_id: q12
+      answer: Olá, Valéria! A fruteira suporta até 5 kg.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q12
+      answer:
+        number: 5
+- id: 21
+  prompt: O Thiago quer saber se o prato de sobremesa cinza volta ao estoque. Responde que por enquanto está esgotado.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p07
+  - tool: answer_question
+    args:
+      question_id: q07
+      answer: Olá, Thiago! Por enquanto o prato está esgotado.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q07
+      answer:
+        contains_any:
+        - esgotad
+        - sem estoque
+        - indispon
+- id: 22
+  prompt: Quantos pedidos cancelados eu tenho e quanto dá a soma deles?
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: cancelled
+  - tool: get_order
+    args:
+      order_id: o08
+  - tool: get_order
+    args:
+      order_id: o14
+  checks:
+  - type: output
+    match:
+      number: 229.7
+      tol: 0.01
+  ground_truth_output: São 2 pedidos cancelados, somando R$ 229,70.
+- id: 23
+  prompt: Qual é o pedido pago mais antigo que ainda não foi enviado? Me diz o comprador.
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o03
+  checks:
+  - type: output
+    match:
+      contains: Diego
+  ground_truth_output: É o pedido o03, do Diego, de 14/03.
+- id: 24
+  prompt: Atualiza o estoque do vaso grande (p03) para 5, a ceramista fez mais 3.
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p03
+  - tool: update_stock
+    args:
+      product_id: p03
+      quantity: 5
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p03
+  - type: state
+    path: products.p03.stock
+    match: 5
+- id: 25
+  prompt: Responde as perguntas pendentes da caneca azul (q01) e do jogo de potes (q15) usando a descrição dos anúncios.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: get_product
+    args:
+      product_id: p15
+  - tool: answer_question
+    args:
+      question_id: q01
+      answer: Olá, Marcos! Sim, a caneca pode ir ao micro-ondas.
+  - tool: answer_question
+    args:
+      question_id: q15
+      answer: Olá, Bianca! Os potes vão ao freezer, sem a tampa.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q01
+      answer:
+        contains: micro
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q15
+      answer:
+        contains: freezer
+- id: 26
+  prompt: O Eduardo cancelou o pedido o08. O que ele tinha comprado e quanto era?
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o08
+  checks:
+  - type: output
+    match:
+      contains: caneca
+  - type: output
+    match:
+      number: 89.9
+  ground_truth_output: Ele tinha comprado uma caneca azul, por R$ 89,90.
+- id: 27
+  prompt: Quanto a Simone pagou no pedido o17, ainda tenho estoque desse produto e qual a nota média dele?
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o17
+  - tool: get_product
+    args:
+      product_id: p02
+  - tool: list_reviews
+    args:
+      product_id: p02
+  checks:
+  - type: output
+    match:
+      number: 578
+  - type: output
+    match:
+      number: 3
+  - type: output
+    match:
+      number: 4
+  ground_truth_output: A Simone pagou R$ 578,00. Restam 3 jogos e a nota média é 4.
+- id: 28
+  prompt: O pedido do Rodrigo (o18) acabou de ser pago. Baixa do estoque da caneca azul (p01) as unidades dele.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o18
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: update_stock
+    args:
+      product_id: p01
+      quantity: 11
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p01
+  - type: state
+    path: products.p01.stock
+    match: 11
+- id: 29
+  prompt: O Heitor perguntou o diâmetro do vaso pequeno para suculentas. Responde pelo anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p09
+  - tool: answer_question
+    args:
+      question_id: q22
+      answer: Olá, Heitor! O vaso tem 9 cm de diâmetro.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q22
+      answer:
+        number: 9
+- id: 30
+  prompt: Quanto fica 6 canecas azuis (p01) no preço normal, sem desconto?
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  checks:
+  - type: output
+    match:
+      number: 539.4
+      tol: 0.01
+  ground_truth_output: Ficam R$ 539,40.
+- id: 31
+  prompt: Agradece o Paulo (pedido o01) pela avaliação da caneca azul, mandando uma mensagem pra ele.
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p01
+  - tool: send_buyer_message
+    args:
+      order_id: o01
+      message: Olá, Paulo! Obrigada pela avaliação da caneca.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o01
+      message:
+        contains_any:
+        - obrigad
+        - agradeç
+        - agradec
+- id: 32
+  prompt: Manda mensagem ao Eduardo (pedido o08) confirmando o cancelamento e o reembolso do valor do pedido.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o08
+  - tool: send_buyer_message
+    args:
+      order_id: o08
+      message: Olá, Eduardo! Cancelamos seu pedido e vamos reembolsar R$ 89,90.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o08
+      message:
+        number: 89.9
+- id: 33
+  prompt: Qual a nota média da jarra (p08) e tem alguma reclamação?
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p08
+  checks:
+  - type: output
+    match:
+      number: 3
+  - type: output
+    match:
+      contains_any:
+      - alça
+      - trinc
+  ground_truth_output: A nota média é 3. Um comprador reclamou que a alça chegou trincada.
+- id: 34
+  prompt: A Renata perguntou se tem desconto para 6 canecas azuis. Responde que fechamos as 6 por R$ 80 cada.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: answer_question
+    args:
+      question_id: q17
+      answer: Olá, Renata! Para 6 canecas, fechamos por R$ 80 cada.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q17
+      answer:
+        number: 80
+- id: 35
+  prompt: 'Responde as duas perguntas das xícaras: a da Aline (q06) e a da Cíntia (q24), com base no anúncio.'
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p06
+  - tool: answer_question
+    args:
+      question_id: q06
+      answer: Olá, Aline! Sim, as xícaras vão na lava-louças.
+  - tool: answer_question
+    args:
+      question_id: q24
+      answer: Olá, Cíntia! Cada xícara comporta 180 ml.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q06
+      answer:
+        contains_any:
+        - lava-lou
+        - lava lou
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q24
+      answer:
+        number: 180
+- id: 36
+  prompt: O Pedro perguntou se a caneca de expresso vem com pires. Responde pelo anúncio.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p05
+  - tool: answer_question
+    args:
+      question_id: q20
+      answer: Olá, Pedro! A caneca é vendida sem pires.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q20
+      answer:
+        contains_any:
+        - sem pires
+        - não acompanha
+        - não vem
+        - não inclui
+        - não
+- id: 37
+  prompt: Qual a soma dos pedidos pagos que ainda não saíram? E o que o Diego pediu na observação do pedido dele?
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o03
+  checks:
+  - type: output
+    match:
+      number: 1685.6
+      tol: 0.01
+  - type: output
+    match:
+      contains_any:
+      - presente
+      - nota
+  ground_truth_output: A soma é R$ 1.685,60. O Diego avisou que é presente e pediu para mandar sem nota dentro da caixa.
+- id: 38
+  prompt: Aumenta em 10 reais o preço da fruteira (p11).
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p11
+  - tool: update_price
+    args:
+      product_id: p11
+      new_price: 199.9
+  checks:
+  - type: called
+    tool: update_price
+    args:
+      product_id: p11
+  - type: state
+    path: products.p11.price
+    match:
+      equals: 199.9
+      tol: 0.01
+- id: 39
+  prompt: 'Entrou o pedido da jarra do Ricardo (o05): baixa 1 do estoque da jarra (p08) e manda mensagem pra ele confirmando que já separei.'
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o05
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: update_stock
+    args:
+      product_id: p08
+      quantity: 5
+  - tool: send_buyer_message
+    args:
+      order_id: o05
+      message: Olá, Ricardo! Já separei sua jarra.
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p08
+  - type: state
+    path: products.p08.stock
+    match: 5
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o05
+      message: {}

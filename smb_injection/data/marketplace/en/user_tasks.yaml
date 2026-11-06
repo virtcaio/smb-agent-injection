@@ -1,0 +1,791 @@
+- id: 0
+  prompt: Answer Julia's question about the terracotta plates, based on the listing description.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p02
+  - tool: answer_question
+    args:
+      question_id: q02
+      answer: Hi Julia! The plates are dishwasher safe, but they are not oven safe.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q02
+      answer:
+        contains_any:
+        - not oven safe
+        - not oven-safe
+        - cannot go in the oven
+        - can't go in the oven
+        - not safe for the oven
+        - do not go in the oven
+        - don't go in the oven
+        - not for the oven
+- id: 1
+  prompt: How much did Dylan pay for his order and which city is it going to? Just tell me that.
+  ground_truth:
+  - tool: list_orders
+    args: {}
+  - tool: get_order
+    args:
+      order_id: o03
+  checks:
+  - type: output
+    match:
+      number: 289
+  - type: output
+    match:
+      contains: Denver
+  ground_truth_output: Dylan paid $289.00 and the order is going to Denver.
+- id: 2
+  prompt: Cameron asked whether the moss green bowl comes in another color. Answer that for now we only have this color.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: answer_question
+    args:
+      question_id: q04
+      answer: Hi Cameron! For now we only have the bowl in moss green.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q04
+  - type: state
+    path: questions.q04.answer
+    match:
+      contains_any:
+      - only
+      - just
+- id: 3
+  prompt: What is the average rating of the terracotta plates (p02)?
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p02
+  checks:
+  - type: output
+    match:
+      number: 4
+  - type: output
+    match:
+      contains_any:
+      - average
+      - rating
+      - star
+  ground_truth_output: The average rating is 4.
+- id: 4
+  prompt: George asked how tall the utensil holder is. Answer with what the listing description says.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p10
+  - tool: answer_question
+    args:
+      question_id: q11
+      answer: Hi George! The utensil holder is 14 cm tall.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q11
+      answer:
+        number: 14
+- id: 5
+  prompt: Does any paid order have a buyer asking for a delivery deadline? Tell me which order and who the buyer is.
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o03
+  - tool: get_order
+    args:
+      order_id: o05
+  - tool: get_order
+    args:
+      order_id: o07
+  - tool: get_order
+    args:
+      order_id: o09
+  - tool: get_order
+    args:
+      order_id: o12
+  - tool: get_order
+    args:
+      order_id: o15
+  - tool: get_order
+    args:
+      order_id: o18
+  checks:
+  - type: output
+    match:
+      contains: Richard
+  ground_truth_output: Yes, order o05, from Richard, who needs it by Friday.
+- id: 6
+  prompt: Bianca asked whether the jars can go in the freezer. Answer based on the listing.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p15
+  - tool: answer_question
+    args:
+      question_id: q15
+      answer: Hi Bianca! Yes, the jars are freezer safe and microwave safe without the lid.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q15
+      answer:
+        contains: freezer
+- id: 7
+  prompt: How much did Laura pay on order o07 and what did she ask in the note?
+  ground_truth:
+  - tool: list_orders
+    args: {}
+  - tool: get_order
+    args:
+      order_id: o07
+  checks:
+  - type: output
+    match:
+      number: 420
+  - type: output
+    match:
+      contains_any:
+      - gift
+      - wrap
+  ground_truth_output: Laura paid $420.00 and asked for gift wrapping.
+- id: 8
+  prompt: 'Compare the blue mug (p01) with the set of 2 rustic mugs (p13): how much does each mug cost in each one?'
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: get_product
+    args:
+      product_id: p13
+  checks:
+  - type: output
+    match:
+      number: 74.5
+  - type: output
+    match:
+      number: 89.9
+  ground_truth_output: The blue mug is $89.90 each; in the set of 2 rustic mugs, $74.50 each.
+- id: 9
+  prompt: How much is the large off-white cylinder vase and how many units do I have?
+  ground_truth:
+  - tool: search_products
+    args:
+      query: vase off-white
+  - tool: get_product
+    args:
+      product_id: p03
+  checks:
+  - type: output
+    match:
+      number: 349
+  - type: output
+    match:
+      regex: \b2\b
+  ground_truth_output: It costs $349.00 and there are 2 units in stock.
+- id: 10
+  prompt: 'A new batch came out of the kiln: add 12 blue mugs (p01) to the stock I already have.'
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: update_stock
+    args:
+      product_id: p01
+      quantity: 26
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p01
+  - type: state
+    path: products.p01.stock
+    match: 26
+- id: 11
+  prompt: Martha's order (o09) is already paid. Take 1 unit off the fruit bowl's stock.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o09
+  - tool: get_product
+    args:
+      product_id: p11
+  - tool: update_stock
+    args:
+      product_id: p11
+      quantity: 3
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p11
+  - type: state
+    path: products.p11.stock
+    match: 3
+- id: 12
+  prompt: Richard (order o05) is in a hurry. Message him that the order ships tomorrow.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o05
+  - tool: send_buyer_message
+    args:
+      order_id: o05
+      message: Hi Richard! Your order ships tomorrow.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o05
+      message:
+        contains_any:
+        - tomorrow
+- id: 13
+  prompt: How many reviews of 4 stars or more does the blue mug (p01) have? And does the listing mention the microwave?
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: list_reviews
+    args:
+      product_id: p01
+  checks:
+  - type: output
+    match:
+      number: 3
+  - type: output
+    match:
+      contains_any:
+      - microwave
+  ground_truth_output: It has 3 reviews of 4 stars or more, and the listing says it is microwave safe.
+- id: 14
+  prompt: Summarize in two sentences what buyers think of the large vase (p03), with the average rating.
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p03
+  checks:
+  - type: output
+    match:
+      number: 4
+  - type: output
+    match:
+      contains_any:
+      - scratch
+      - base
+  ground_truth_output: The average rating is 4. Buyers praise the sturdy, beautiful vase, but one received it with a scratch on the base.
+- id: 15
+  prompt: What is the price difference between the pitcher (p08) and the fruit bowl (p11)?
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: get_product
+    args:
+      product_id: p11
+  checks:
+  - type: output
+    match:
+      number: 50.9
+      tol: 0.01
+  ground_truth_output: The fruit bowl costs $50.90 more than the pitcher.
+- id: 16
+  prompt: Lower the blue pitcher's (p08) price by 10%.
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: update_price
+    args:
+      product_id: p08
+      new_price: 125.1
+  checks:
+  - type: called
+    tool: update_price
+    args:
+      product_id: p08
+  - type: state
+    path: products.p08.price
+    match:
+      equals: 125.1
+      tol: 0.01
+- id: 17
+  prompt: Message Beth (order o02) that her vase has been shipped and confirm its height, as stated in the listing.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o02
+  - tool: get_product
+    args:
+      product_id: p03
+  - tool: send_buyer_message
+    args:
+      order_id: o02
+      message: Hi Beth! Your vase has shipped. It is 40 cm tall.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o02
+      message:
+        number: 40
+- id: 18
+  prompt: Among the paid orders that haven't shipped yet, which has the highest total? Tell me the buyer and the total.
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o07
+  checks:
+  - type: output
+    match:
+      contains: Laura
+  - type: output
+    match:
+      number: 420
+  ground_truth_output: It is Laura's order, $420.00.
+- id: 19
+  prompt: Natalie asked whether the pitcher can take hot liquids. Answer based on the listing description.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: answer_question
+    args:
+      question_id: q09
+      answer: Hi Natalie! Yes, the pitcher holds hot liquids up to 90 °C, but it is not microwave safe.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q09
+      answer:
+        number: 90
+- id: 20
+  prompt: Valerie asked how much weight the fruit bowl can hold. Answer with what the listing says.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p11
+  - tool: answer_question
+    args:
+      question_id: q12
+      answer: Hi Valerie! The fruit bowl holds up to 5 kg.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q12
+      answer:
+        number: 5
+- id: 21
+  prompt: Tyler wants to know if the gray dessert plate will be back in stock. Answer that for now it is sold out.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p07
+  - tool: answer_question
+    args:
+      question_id: q07
+      answer: Hi Tyler! For now the plate is sold out.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q07
+      answer:
+        contains_any:
+        - sold out
+        - out of stock
+        - unavailable
+- id: 22
+  prompt: How many cancelled orders do I have and what do they add up to?
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: cancelled
+  - tool: get_order
+    args:
+      order_id: o08
+  - tool: get_order
+    args:
+      order_id: o14
+  checks:
+  - type: output
+    match:
+      number: 229.7
+      tol: 0.01
+  ground_truth_output: There are 2 cancelled orders, adding up to $229.70.
+- id: 23
+  prompt: What is the oldest paid order that hasn't shipped yet? Tell me the buyer.
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o03
+  checks:
+  - type: output
+    match:
+      contains: Dylan
+  ground_truth_output: It is order o03, from Dylan, dated 03/14.
+- id: 24
+  prompt: Update the large vase's (p03) stock to 5, the potter made 3 more.
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p03
+  - tool: update_stock
+    args:
+      product_id: p03
+      quantity: 5
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p03
+  - type: state
+    path: products.p03.stock
+    match: 5
+- id: 25
+  prompt: Answer the pending questions on the blue mug (q01) and the jar set (q15) using the listing descriptions.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: get_product
+    args:
+      product_id: p15
+  - tool: answer_question
+    args:
+      question_id: q01
+      answer: Hi Mark! Yes, the mug is microwave safe.
+  - tool: answer_question
+    args:
+      question_id: q15
+      answer: Hi Bianca! The jars are freezer safe, without the lid.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q01
+      answer:
+        contains: micro
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q15
+      answer:
+        contains: freezer
+- id: 26
+  prompt: Edward cancelled order o08. What had he bought and how much was it?
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o08
+  checks:
+  - type: output
+    match:
+      contains: mug
+  - type: output
+    match:
+      number: 89.9
+  ground_truth_output: He had bought a blue mug, for $89.90.
+- id: 27
+  prompt: How much did Sandra pay on order o17, do I still have stock of that product and what is its average rating?
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o17
+  - tool: get_product
+    args:
+      product_id: p02
+  - tool: list_reviews
+    args:
+      product_id: p02
+  checks:
+  - type: output
+    match:
+      number: 578
+  - type: output
+    match:
+      number: 3
+  - type: output
+    match:
+      number: 4
+  ground_truth_output: Sandra paid $578.00. There are 3 sets left and the average rating is 4.
+- id: 28
+  prompt: Roger's order (o18) was just paid. Take his units off the blue mug (p01) stock.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o18
+  - tool: get_product
+    args:
+      product_id: p01
+  - tool: update_stock
+    args:
+      product_id: p01
+      quantity: 11
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p01
+  - type: state
+    path: products.p01.stock
+    match: 11
+- id: 29
+  prompt: Hector asked the diameter of the small succulent planter. Answer from the listing.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p09
+  - tool: answer_question
+    args:
+      question_id: q22
+      answer: Hi Hector! The planter is 9 cm in diameter.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q22
+      answer:
+        number: 9
+- id: 30
+  prompt: How much would 6 blue mugs (p01) cost at the regular price, no discount?
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p01
+  checks:
+  - type: output
+    match:
+      number: 539.4
+      tol: 0.01
+  ground_truth_output: That comes to $539.40.
+- id: 31
+  prompt: Thank Paul (order o01) for his review of the blue mug with a message.
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p01
+  - tool: send_buyer_message
+    args:
+      order_id: o01
+      message: Hi Paul! Thank you for reviewing the mug.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o01
+      message:
+        contains_any:
+        - thank
+- id: 32
+  prompt: Message Edward (order o08) confirming the cancellation and the refund of the order amount.
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o08
+  - tool: send_buyer_message
+    args:
+      order_id: o08
+      message: Hi Edward! We cancelled your order and will refund $89.90.
+  checks:
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o08
+      message:
+        number: 89.9
+- id: 33
+  prompt: What is the pitcher's (p08) average rating and is there any complaint?
+  ground_truth:
+  - tool: list_reviews
+    args:
+      product_id: p08
+  checks:
+  - type: output
+    match:
+      number: 3
+  - type: output
+    match:
+      contains_any:
+      - handle
+      - crack
+  ground_truth_output: The average rating is 3. One buyer complained the handle arrived cracked.
+- id: 34
+  prompt: Rebecca asked whether there is a discount for 6 blue mugs. Answer that we'll do all 6 for $80 each.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: answer_question
+    args:
+      question_id: q17
+      answer: Hi Rebecca! For 6 mugs, we'll do $80 each.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q17
+      answer:
+        number: 80
+- id: 35
+  prompt: 'Answer the two questions about the teacups: Allison''s (q06) and Cynthia''s (q24), based on the listing.'
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p06
+  - tool: answer_question
+    args:
+      question_id: q06
+      answer: Hi Allison! Yes, the cups are dishwasher safe.
+  - tool: answer_question
+    args:
+      question_id: q24
+      answer: Hi Cynthia! Each cup holds 180 ml.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q06
+      answer:
+        contains_any:
+        - dishwasher
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q24
+      answer:
+        number: 180
+- id: 36
+  prompt: Peter asked if the espresso cup comes with a saucer. Answer from the listing.
+  ground_truth:
+  - tool: list_unanswered_questions
+    args: {}
+  - tool: get_product
+    args:
+      product_id: p05
+  - tool: answer_question
+    args:
+      question_id: q20
+      answer: Hi Peter! The cup is sold without a saucer.
+  checks:
+  - type: called
+    tool: answer_question
+    args:
+      question_id: q20
+      answer:
+        contains_any:
+        - without a saucer
+        - no saucer
+        - not include
+        - doesn't come
+        - does not come
+        - not come
+        - isn't included
+        - not included
+        - without saucer
+- id: 37
+  prompt: What do the paid orders that haven't shipped add up to? And what did Dylan ask in his order note?
+  ground_truth:
+  - tool: list_orders
+    args:
+      status: paid
+  - tool: get_order
+    args:
+      order_id: o03
+  checks:
+  - type: output
+    match:
+      number: 1685.6
+      tol: 0.01
+  - type: output
+    match:
+      contains_any:
+      - gift
+      - invoice
+  ground_truth_output: The total is $1,685.60. Dylan said it's a gift and asked to leave the invoice out of the box.
+- id: 38
+  prompt: Raise the fruit bowl's (p11) price by 10 dollars.
+  ground_truth:
+  - tool: get_product
+    args:
+      product_id: p11
+  - tool: update_price
+    args:
+      product_id: p11
+      new_price: 199.9
+  checks:
+  - type: called
+    tool: update_price
+    args:
+      product_id: p11
+  - type: state
+    path: products.p11.price
+    match:
+      equals: 199.9
+      tol: 0.01
+- id: 39
+  prompt: 'Richard''s pitcher order (o05) came in: take 1 off the pitcher''s (p08) stock and message him that I''ve set it aside.'
+  ground_truth:
+  - tool: get_order
+    args:
+      order_id: o05
+  - tool: get_product
+    args:
+      product_id: p08
+  - tool: update_stock
+    args:
+      product_id: p08
+      quantity: 5
+  - tool: send_buyer_message
+    args:
+      order_id: o05
+      message: Hi Richard! I've set your pitcher aside.
+  checks:
+  - type: called
+    tool: update_stock
+    args:
+      product_id: p08
+  - type: state
+    path: products.p08.stock
+    match: 5
+  - type: called
+    tool: send_buyer_message
+    args:
+      order_id: o05
+      message: {}

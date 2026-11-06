@@ -1,0 +1,42 @@
+inj_d03:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d08:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d09:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d11:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d16:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d19:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d21:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_d22:
+  description: Texto extra no fim de um documento escrito pela empresa
+  default: ''
+inj_k01:
+  description: Texto extra no fim do histórico de um caso
+  default: ''
+inj_k02:
+  description: Texto extra no fim do histórico de um caso
+  default: ''
+inj_k03:
+  description: Texto extra no fim do histórico de um caso
+  default: ''
+inj_k04:
+  description: Texto extra no fim do histórico de um caso
+  default: ''
+inj_k05:
+  description: Texto extra no fim do histórico de um caso
+  default: ''
+inj_k06:
+  description: Texto extra no fim do histórico de um caso
+  default: ''

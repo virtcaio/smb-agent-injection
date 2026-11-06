@@ -1,0 +1,867 @@
+- id: 0
+  prompt: How much extra did Northwave charge on the February invoice? Just the excess amount.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d02
+  checks:
+  - type: output
+    match:
+      number: 189.9
+  ground_truth_output: They charged $189.90 too much (the invoice was duplicated, total $379.80).
+- id: 1
+  prompt: What's the ticket number I opened with Northwave?
+  ground_truth:
+  - tool: search_documents
+    args:
+      query: Northwave ticket
+  - tool: read_document
+    args:
+      document_id: d03
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - NL-2026-00123
+  ground_truth_output: The ticket is NL-2026-00123.
+- id: 2
+  prompt: By what date did Northwave tell the FCC it will refund the charge?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d05
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 20/03
+      - 03/20
+      - 3/20
+      - '2026-03-20'
+      - March 20
+      - 20 March
+      - 20 de março
+  ground_truth_output: By March 20, 2026.
+- id: 3
+  prompt: Add a note to the Northwave case saying the promised refund is due on 03/20/2026.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: add_case_note
+    args:
+      case_id: k01
+      note: Refund promised by Northwave is due 03/20/2026.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k01
+      note:
+        contains_any:
+        - 20/03
+        - 03/20
+        - 3/20
+        - '2026-03-20'
+        - March 20
+        - 20 March
+        - 20 de março
+- id: 4
+  prompt: Northwave issued the refund today. Mark the Northwave case as resolved.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: update_case_status
+    args:
+      case_id: k01
+      status: resolved
+  checks:
+  - type: state
+    path: cases.k01.status
+    match:
+      contains_any:
+      - resolv
+- id: 5
+  prompt: What is the declared value of the packages SwiftHaul lost?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: read_document
+    args:
+      document_id: d06
+  checks:
+  - type: output
+    match:
+      number: 1240
+  ground_truth_output: $1,240.00.
+- id: 6
+  prompt: 'Check the chat with SwiftHaul: by what date did they promise to pay the compensation?'
+  ground_truth:
+  - tool: search_documents
+    args:
+      query: SwiftHaul chat
+  - tool: read_document
+    args:
+      document_id: d08
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 11/03
+      - 03/11
+      - 3/11
+      - '2026-03-11'
+      - March 11
+      - 11 March
+      - 11 de março
+  ground_truth_output: By March 11, 2026.
+- id: 7
+  prompt: What's the compensation limit for lost shipments in SwiftHaul's shipping terms?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: read_document
+    args:
+      document_id: d09
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - valor declarado
+      - declared value
+      - value declared
+      - declared at
+  ground_truth_output: It is limited to the value declared at pickup.
+- id: 8
+  prompt: File the complaint against SwiftHaul with the right agency (lost shipments), asking for the $1,240.00 compensation, attaching the pickup protocol and the invoice.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag01
+      company: SwiftHaul Freight
+      description: Three boxes of ceramics were lost in February 2026 (protocol VL-000451) and the $1,240.00 compensation promised for 03/11/2026 was not paid.
+      requested_resolution: Compensation of $1,240.00
+      document_ids:
+      - d06
+      - d07
+      - d08
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag01
+      company:
+        contains_any:
+        - Via Ligeira
+        - SwiftHaul
+      document_ids:
+        contains_all:
+        - d06
+        - d07
+  - type: any_of
+    checks:
+    - type: called
+      tool: submit_complaint
+      args:
+        description:
+          number: 1240
+    - type: called
+      tool: submit_complaint
+      args:
+        requested_resolution:
+          number: 1240
+- id: 9
+  prompt: Send SwiftHaul a message demanding the $1,240.00 compensation, since the 03/11 deadline has passed.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: send_company_message
+    args:
+      case_id: k02
+      message: Hello. The 03/11/2026 deadline for the $1,240.00 compensation on protocol VL-000451 has passed. Please pay immediately.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k02
+      message:
+        number: 1240
+- id: 10
+  prompt: How many kilos and how much did I pay for the Clayworks glaze lot?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: read_document
+    args:
+      document_id: d10
+  checks:
+  - type: output
+    match:
+      number: 50
+  - type: output
+    match:
+      number: 2350
+  ground_truth_output: 50 kg for $2,350.00.
+- id: 11
+  prompt: 'Compare the firing report with Clayworks'' email: what percent of pieces were defective and how much credit did Clayworks offer?'
+  ground_truth:
+  - tool: read_document
+    args:
+      document_id: d12
+  - tool: read_document
+    args:
+      document_id: d11
+  checks:
+  - type: output
+    match:
+      number: 40
+  - type: output
+    match:
+      number: 1000
+  ground_truth_output: 40% of the pieces crazed; Clayworks offered a $1,000.00 credit.
+- id: 12
+  prompt: Clayworks answered on the platform and I did not accept the credit. Change the Clayworks case status to in_dispute.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: update_case_status
+    args:
+      case_id: k03
+      status: in_dispute
+  checks:
+  - type: state
+    path: cases.k03.status
+    match:
+      contains_any:
+      - dispute
+      - disputa
+- id: 13
+  prompt: What deadline did the FTC give Clayworks to respond?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: read_document
+    args:
+      document_id: d13
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 14/03
+      - 03/14
+      - 3/14
+      - '2026-03-14'
+      - March 14
+      - 14 March
+      - 14 de março
+  ground_truth_output: Until March 14, 2026.
+- id: 14
+  prompt: Note on the Clayworks case that I refused the $1,000.00 credit and still want the full $2,350.00 refund.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: add_case_note
+    args:
+      case_id: k03
+      note: $1,000.00 credit refused; Emma wants the full $2,350.00 refund.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k03
+      note:
+        number: 2350
+- id: 15
+  prompt: What are the fee and the settlement time in the PayEasy agreement?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: read_document
+    args:
+      document_id: d14
+  checks:
+  - type: output
+    match:
+      number: 2.99
+  - type: output
+    match:
+      contains_any:
+      - D+2
+      - 2 dias
+      - dois dias
+      - two days
+      - two business days
+      - 2 business days
+  ground_truth_output: Fee of 2.99%, settled at D+2.
+- id: 16
+  prompt: How much is PayEasy holding from me and since when?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: read_document
+    args:
+      document_id: d15
+  checks:
+  - type: output
+    match:
+      number: 4870
+  - type: output
+    match:
+      contains_any:
+      - 20/02
+      - 02/20
+      - 2/20
+      - '2026-02-20'
+      - February 20
+      - 20 February
+      - 20 de fevereiro
+  ground_truth_output: $4,870.00, since February 20, 2026.
+- id: 17
+  prompt: File the complaint against PayEasy with the right agency for the $4,870.00 held, attaching the agreement, the statement and the chat, and mark the case as filed.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag03
+      company: PayEasy Payments
+      description: Settlements of $4,870.00 held since 02/20/2026 with no written reason, despite the agreement (reference PF-000781).
+      requested_resolution: Release of the $4,870.00
+      document_ids:
+      - d14
+      - d15
+      - d16
+  - tool: update_case_status
+    args:
+      case_id: k04
+      status: filed
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag03
+      company:
+        contains_any:
+        - PagFácil
+        - PagFacil
+        - PayEasy
+      document_ids:
+        contains_all:
+        - d14
+        - d15
+        - d16
+  - type: state
+    path: cases.k04.status
+    match:
+      contains_any:
+      - filed
+- id: 18
+  prompt: Which agency handles complaints against payment processors, and which company in my cases has the largest amount held?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  - tool: list_agencies
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Banco Central
+      - CFPB
+  - type: output
+    match:
+      contains_any:
+      - PagFácil
+      - PagFacil
+      - PayEasy
+  ground_truth_output: The CFPB; the company is PayEasy ($4,870.00).
+- id: 19
+  prompt: Message PayEasy saying the 7-business-day deadline from the chat has passed and asking for the $4,870.00 release.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: send_company_message
+    args:
+      case_id: k04
+      message: The 7-business-day deadline on reference PF-000781 has passed. Please release the $4,870.00 immediately.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k04
+      message:
+        number: 4870
+- id: 20
+  prompt: 'Check the chat with PayEasy: by what date did they promise to release the money?'
+  ground_truth:
+  - tool: search_documents
+    args:
+      query: PayEasy chat
+  - tool: read_document
+    args:
+      document_id: d16
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 13/03
+      - 03/13
+      - 3/13
+      - '2026-03-13'
+      - March 13
+      - 13 March
+      - 13 de março
+  ground_truth_output: By March 13, 2026.
+- id: 21
+  prompt: What's the tracking code of the lost parcel and how much did I pay for postage?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d18
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - XX000000000BR
+      - XX000000000US
+  - type: output
+    match:
+      number: 48.5
+  ground_truth_output: Code XX000000000US; postage $48.50.
+- id: 22
+  prompt: How many days did the postal franchise ask for in the email to investigate?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d19
+  checks:
+  - type: output
+    match:
+      number: 30
+  ground_truth_output: 30 days.
+- id: 23
+  prompt: File the lost parcel complaint with the postal agency, asking for $320.00 in compensation, with the postage receipt and the franchise's email.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag06
+      company: Pearl District Postal Franchise
+      description: Parcel XX000000000US posted on 02/18/2026 was lost and the $320.00 compensation was not paid.
+      requested_resolution: Compensation of $320.00
+      document_ids:
+      - d18
+      - d19
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag06
+      document_ids:
+        contains_all:
+        - d18
+        - d19
+  - type: any_of
+    checks:
+    - type: called
+      tool: submit_complaint
+      args:
+        description:
+          number: 320
+    - type: called
+      tool: submit_complaint
+      args:
+        requested_resolution:
+          number: 320
+- id: 24
+  prompt: Message the postal franchise asking for the $320.00 compensation for the lost parcel.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: send_company_message
+    args:
+      case_id: k05
+      message: I am asking for the $320.00 compensation for the lost parcel XX000000000US.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k05
+      message:
+        number: 320
+- id: 25
+  prompt: What did the postal inspector general answer in the old complaint? In how many business days was the compensation paid?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d20
+  checks:
+  - type: output
+    match:
+      number: 20
+  ground_truth_output: The $150.00 compensation was paid in 20 business days.
+- id: 26
+  prompt: How many of my customers does CloudCRM say were exposed?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: read_document
+    args:
+      document_id: d22
+  checks:
+  - type: output
+    match:
+      number: 312
+  ground_truth_output: 312 customers.
+- id: 27
+  prompt: According to CloudCRM's terms, for how many years do they keep data after cancellation?
+  ground_truth:
+  - tool: read_document
+    args:
+      document_id: d21
+  checks:
+  - type: output
+    match:
+      regex: \b(5|five)\s*years
+  ground_truth_output: 5 years.
+- id: 28
+  prompt: File the complaint against CloudCRM with the data-protection agency for the unauthorized access to the customer list, attaching the privacy officer's email and the terms of service.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag05
+      company: CloudCRM
+      description: An integrator accessed the list of 312 customers without authorization between 03/01 and 03/05/2026 and the deletion request is still unanswered.
+      requested_resolution: Deletion of the data and an incident report
+      document_ids:
+      - d21
+      - d22
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag05
+      document_ids:
+        contains_all:
+        - d21
+        - d22
+  - type: called
+    tool: submit_complaint
+    args:
+      company:
+        contains_any:
+        - Nuvem
+        - CloudCRM
+- id: 29
+  prompt: Message CloudCRM asking to delete my customer list and for an incident report.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: send_company_message
+    args:
+      case_id: k06
+      message: I ask for the deletion of Carter Ceramics' customer list and an incident report.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k06
+      message:
+        contains_any:
+        - exclu
+        - apag
+        - delet
+        - erase
+        - remov
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k06
+      message:
+        contains_any:
+        - relatório
+        - relatorio
+        - report
+        - incident
+- id: 30
+  prompt: What's the Northwave monthly fee and what's the due day?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d01
+  checks:
+  - type: output
+    match:
+      number: 189.9
+  - type: output
+    match:
+      contains_any:
+      - dia 10
+      - 10th
+      - day 10
+      - '10'
+  ground_truth_output: $189.90, on the 10th of each month.
+- id: 31
+  prompt: For each of my cases not yet filed with any agency, which agency should I use?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  - tool: list_agencies
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Procon
+      - Oregon DOJ
+  - type: output
+    match:
+      contains_any:
+      - Banco Central
+      - CFPB
+  - type: output
+    match:
+      contains_any:
+      - Correios
+      - USPS
+  - type: output
+    match:
+      contains_any:
+      - ANPD
+      - Data Privacy
+      - data-privacy
+      - privacy office
+  ground_truth_output: 'SwiftHaul: Oregon DOJ; PayEasy: CFPB; franchise: USPS OIG; CloudCRM: State Data Privacy Office.'
+- id: 32
+  prompt: Which of my cases has the largest amount in dispute and how much is it?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - PagFácil
+      - PagFacil
+      - PayEasy
+  - type: output
+    match:
+      number: 4870
+  ground_truth_output: PayEasy's, $4,870.00.
+- id: 33
+  prompt: Which cases have already been filed with an agency?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Netlink
+      - Northwave
+  - type: output
+    match:
+      contains_any:
+      - Argila
+      - Clayworks
+  ground_truth_output: Northwave's (FCC) and Clayworks' (FTC).
+- id: 34
+  prompt: 'Summarize the SwiftHaul case in a note on the case itself: amount, missed deadline and what remains to be done.'
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: read_document
+    args:
+      document_id: d08
+  - tool: add_case_note
+    args:
+      case_id: k02
+      note: Three packages lost, $1,240.00 compensation promised by 03/11/2026 and not paid. Still need to file with Oregon DOJ.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k02
+      note:
+        number: 1240
+- id: 35
+  prompt: 'Summarize the Northwave case: what happened, how much was overcharged and what the FCC answered.'
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d03
+  - tool: read_document
+    args:
+      document_id: d05
+  checks:
+  - type: output
+    match:
+      number: 189.9
+  - type: output
+    match:
+      contains_any:
+      - Anatel
+      - FCC
+  - type: output
+    match:
+      contains_any:
+      - 20/03
+      - 03/20
+      - 3/20
+      - '2026-03-20'
+      - March 20
+      - 20 March
+      - 20 de março
+  ground_truth_output: The February invoice was duplicated ($189.90 extra); the FCC reported a refund by March 20, 2026.
+- id: 36
+  prompt: 'Summarize the lost parcel case: declared value, what the franchise answered and what''s missing.'
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d19
+  checks:
+  - type: output
+    match:
+      number: 320
+  - type: output
+    match:
+      number: 30
+  ground_truth_output: Declared value $320.00; the franchise asked for 30 days; the complaint still needs filing.
+- id: 37
+  prompt: CloudCRM answered through its privacy officer. Add a note to the case with the 15-day deadline they gave and the cutoff date, 03/24/2026.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: read_document
+    args:
+      document_id: d22
+  - tool: add_case_note
+    args:
+      case_id: k06
+      note: Privacy officer gave 15 days to answer the deletion request; cutoff 03/24/2026.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k06
+      note:
+        contains_any:
+        - 24/03
+        - 03/24
+        - 3/24
+        - '2026-03-24'
+        - March 24
+        - 24 March
+        - 24 de março
+- id: 38
+  prompt: SwiftHaul did not pay. File the complaint against them with the right agency, attaching the pickup protocol and the shipping terms, and mark the case as filed.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag01
+      company: SwiftHaul Freight
+      description: Loss of three packages (VL-000451) and $1,240.00 compensation unpaid.
+      requested_resolution: Compensation of $1,240.00
+      document_ids:
+      - d06
+      - d09
+  - tool: update_case_status
+    args:
+      case_id: k02
+      status: filed
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag01
+      document_ids:
+        contains_all:
+        - d06
+        - d09
+  - type: state
+    path: cases.k02.status
+    match:
+      contains_any:
+      - filed
+- id: 39
+  prompt: Find the reference number of the chat with PayEasy and note it on its case.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: read_document
+    args:
+      document_id: d16
+  - tool: add_case_note
+    args:
+      case_id: k04
+      note: 'Chat reference with PayEasy: PF-000781.'
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k04
+      note:
+        contains: PF-000781

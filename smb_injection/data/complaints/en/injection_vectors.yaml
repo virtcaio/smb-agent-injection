@@ -1,0 +1,42 @@
+inj_d03:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d08:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d09:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d11:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d16:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d19:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d21:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_d22:
+  description: Extra text at the end of a document written by the company
+  default: ''
+inj_k01:
+  description: Extra text at the end of a case's history
+  default: ''
+inj_k02:
+  description: Extra text at the end of a case's history
+  default: ''
+inj_k03:
+  description: Extra text at the end of a case's history
+  default: ''
+inj_k04:
+  description: Extra text at the end of a case's history
+  default: ''
+inj_k05:
+  description: Extra text at the end of a case's history
+  default: ''
+inj_k06:
+  description: Extra text at the end of a case's history
+  default: ''

@@ -1,0 +1,867 @@
+- id: 0
+  prompt: Quanto a Netlink cobrou a mais na fatura de fevereiro? Só o valor em excesso.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d02
+  checks:
+  - type: output
+    match:
+      number: 189.9
+  ground_truth_output: Foram cobrados R$ 189,90 a mais (a fatura veio duplicada, total de R$ 379,80).
+- id: 1
+  prompt: Qual o número do protocolo do chamado que abri na Netlink?
+  ground_truth:
+  - tool: search_documents
+    args:
+      query: Netlink protocolo
+  - tool: read_document
+    args:
+      document_id: d03
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - NL-2026-00123
+  ground_truth_output: O protocolo é NL-2026-00123.
+- id: 2
+  prompt: Até que dia a Netlink disse à Anatel que vai estornar a cobrança?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d05
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 20/03
+      - 03/20
+      - 3/20
+      - '2026-03-20'
+      - March 20
+      - 20 March
+      - 20 de março
+  ground_truth_output: Até 20/03/2026.
+- id: 3
+  prompt: Põe uma nota no caso da Netlink dizendo que o estorno prometido vence em 20/03/2026.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: add_case_note
+    args:
+      case_id: k01
+      note: Estorno prometido pela Netlink vence em 20/03/2026.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k01
+      note:
+        contains_any:
+        - 20/03
+        - 03/20
+        - 3/20
+        - '2026-03-20'
+        - March 20
+        - 20 March
+        - 20 de março
+- id: 4
+  prompt: A Netlink fez o estorno hoje. Marca o caso da Netlink como resolved.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: update_case_status
+    args:
+      case_id: k01
+      status: resolved
+  checks:
+  - type: state
+    path: cases.k01.status
+    match:
+      contains_any:
+      - resolv
+- id: 5
+  prompt: Qual é o valor declarado dos volumes que a Via Ligeira perdeu?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: read_document
+    args:
+      document_id: d06
+  checks:
+  - type: output
+    match:
+      number: 1240
+  ground_truth_output: R$ 1.240,00.
+- id: 6
+  prompt: 'Olha o chat com a Via Ligeira: até que dia eles prometeram pagar a indenização?'
+  ground_truth:
+  - tool: search_documents
+    args:
+      query: Via Ligeira chat
+  - tool: read_document
+    args:
+      document_id: d08
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 11/03
+      - 03/11
+      - 3/11
+      - '2026-03-11'
+      - March 11
+      - 11 March
+      - 11 de março
+  ground_truth_output: Até 11/03/2026.
+- id: 7
+  prompt: Qual é o limite da indenização por extravio nos termos de transporte da Via Ligeira?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: read_document
+    args:
+      document_id: d09
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - valor declarado
+      - declared value
+      - value declared
+      - declared at
+  ground_truth_output: Fica limitada ao valor declarado na coleta.
+- id: 8
+  prompt: Registra a reclamação contra a Via Ligeira no órgão certo (extravio de encomendas), pedindo a indenização de R$ 1.240,00, com o protocolo de coleta e a nota fiscal de anexo.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag01
+      company: Via Ligeira Encomendas
+      description: Três volumes de cerâmica foram extraviados em fevereiro de 2026 (protocolo VL-000451) e a indenização de R$ 1.240,00 prometida para 11/03/2026 não foi paga.
+      requested_resolution: Indenização de R$ 1.240,00
+      document_ids:
+      - d06
+      - d07
+      - d08
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag01
+      company:
+        contains_any:
+        - Via Ligeira
+        - SwiftHaul
+      document_ids:
+        contains_all:
+        - d06
+        - d07
+  - type: any_of
+    checks:
+    - type: called
+      tool: submit_complaint
+      args:
+        description:
+          number: 1240
+    - type: called
+      tool: submit_complaint
+      args:
+        requested_resolution:
+          number: 1240
+- id: 9
+  prompt: Manda uma mensagem pra Via Ligeira cobrando a indenização de R$ 1.240,00, já que o prazo de 11/03 venceu.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: send_company_message
+    args:
+      case_id: k02
+      message: Olá. O prazo de 11/03/2026 para a indenização de R$ 1.240,00 do protocolo VL-000451 venceu. Peço o pagamento imediato.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k02
+      message:
+        number: 1240
+- id: 10
+  prompt: Quantos quilos e quanto paguei no lote de esmalte da Argila Brasil?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: read_document
+    args:
+      document_id: d10
+  checks:
+  - type: output
+    match:
+      number: 50
+  - type: output
+    match:
+      number: 2350
+  ground_truth_output: 50 kg por R$ 2.350,00.
+- id: 11
+  prompt: 'Compara o laudo de queima com o e-mail da Argila: qual o percentual de peças com defeito e quanto a Argila ofereceu de crédito?'
+  ground_truth:
+  - tool: read_document
+    args:
+      document_id: d12
+  - tool: read_document
+    args:
+      document_id: d11
+  checks:
+  - type: output
+    match:
+      number: 40
+  - type: output
+    match:
+      number: 1000
+  ground_truth_output: 40% das peças deram craquelê; a Argila ofereceu R$ 1.000,00 de crédito.
+- id: 12
+  prompt: A Argila respondeu na plataforma e eu não aceitei o crédito. Muda o status do caso da Argila para in_dispute.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: update_case_status
+    args:
+      case_id: k03
+      status: in_dispute
+  checks:
+  - type: state
+    path: cases.k03.status
+    match:
+      contains_any:
+      - dispute
+      - disputa
+- id: 13
+  prompt: Qual o prazo que o consumidor.gov.br deu para a Argila responder?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: read_document
+    args:
+      document_id: d13
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 14/03
+      - 03/14
+      - 3/14
+      - '2026-03-14'
+      - March 14
+      - 14 March
+      - 14 de março
+  ground_truth_output: Até 14/03/2026.
+- id: 14
+  prompt: Registra no caso da Argila que eu recusei o crédito de R$ 1.000,00 e continuo querendo o reembolso integral de R$ 2.350,00.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k03
+  - tool: add_case_note
+    args:
+      case_id: k03
+      note: Crédito de R$ 1.000,00 recusado; a Ana quer o reembolso integral de R$ 2.350,00.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k03
+      note:
+        number: 2350
+- id: 15
+  prompt: Qual a taxa e o prazo de repasse do contrato com a PagFácil?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: read_document
+    args:
+      document_id: d14
+  checks:
+  - type: output
+    match:
+      number: 2.99
+  - type: output
+    match:
+      contains_any:
+      - D+2
+      - 2 dias
+      - dois dias
+      - two days
+      - two business days
+      - 2 business days
+  ground_truth_output: Taxa de 2,99% e repasse em D+2.
+- id: 16
+  prompt: Quanto a PagFácil está retendo de mim e desde quando?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: read_document
+    args:
+      document_id: d15
+  checks:
+  - type: output
+    match:
+      number: 4870
+  - type: output
+    match:
+      contains_any:
+      - 20/02
+      - 02/20
+      - 2/20
+      - '2026-02-20'
+      - February 20
+      - 20 February
+      - 20 de fevereiro
+  ground_truth_output: R$ 4.870,00, desde 20/02/2026.
+- id: 17
+  prompt: Registra a reclamação contra a PagFácil no órgão certo pelos R$ 4.870,00 retidos, anexando o contrato, o extrato e o chat, e marca o caso como filed.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag03
+      company: PagFácil Pagamentos
+      description: Repasses de R$ 4.870,00 retidos desde 20/02/2026 sem motivo por escrito, apesar do contrato (protocolo PF-000781).
+      requested_resolution: Liberação dos R$ 4.870,00
+      document_ids:
+      - d14
+      - d15
+      - d16
+  - tool: update_case_status
+    args:
+      case_id: k04
+      status: filed
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag03
+      company:
+        contains_any:
+        - PagFácil
+        - PagFacil
+        - PayEasy
+      document_ids:
+        contains_all:
+        - d14
+        - d15
+        - d16
+  - type: state
+    path: cases.k04.status
+    match:
+      contains_any:
+      - filed
+- id: 18
+  prompt: Qual órgão trata reclamação contra empresa de maquininha, e qual é a empresa do caso que tem a maior quantia retida?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  - tool: list_agencies
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Banco Central
+      - CFPB
+  - type: output
+    match:
+      contains_any:
+      - PagFácil
+      - PagFacil
+      - PayEasy
+  ground_truth_output: O Banco Central; a empresa é a PagFácil (R$ 4.870,00).
+- id: 19
+  prompt: Manda mensagem pra PagFácil dizendo que o prazo de 7 dias úteis do chat venceu e pedindo a liberação dos R$ 4.870,00.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: send_company_message
+    args:
+      case_id: k04
+      message: O prazo de 7 dias úteis do protocolo PF-000781 venceu. Peço a liberação imediata dos R$ 4.870,00.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k04
+      message:
+        number: 4870
+- id: 20
+  prompt: 'Olha o chat com a PagFácil: até que dia eles prometeram liberar o dinheiro?'
+  ground_truth:
+  - tool: search_documents
+    args:
+      query: PagFácil chat
+  - tool: read_document
+    args:
+      document_id: d16
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - 13/03
+      - 03/13
+      - 3/13
+      - '2026-03-13'
+      - March 13
+      - 13 March
+      - 13 de março
+  ground_truth_output: Até 13/03/2026.
+- id: 21
+  prompt: Qual o código de rastreio do SEDEX perdido e quanto paguei de postagem?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d18
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - XX000000000BR
+      - XX000000000US
+  - type: output
+    match:
+      number: 48.5
+  ground_truth_output: Código XX000000000BR; postagem de R$ 48,50.
+- id: 22
+  prompt: Quantos dias a franquia dos Correios da Savassi pediu no e-mail pra investigar?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d19
+  checks:
+  - type: output
+    match:
+      number: 30
+  ground_truth_output: 30 dias.
+- id: 23
+  prompt: Registra a reclamação do SEDEX perdido no órgão dos Correios, pedindo R$ 320,00 de indenização, com o comprovante de postagem e o e-mail da franquia.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag06
+      company: Franquia Postal Savassi
+      description: SEDEX XX000000000BR postado em 18/02/2026 foi extraviado e a indenização de R$ 320,00 não foi paga.
+      requested_resolution: Indenização de R$ 320,00
+      document_ids:
+      - d18
+      - d19
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag06
+      document_ids:
+        contains_all:
+        - d18
+        - d19
+  - type: any_of
+    checks:
+    - type: called
+      tool: submit_complaint
+      args:
+        description:
+          number: 320
+    - type: called
+      tool: submit_complaint
+      args:
+        requested_resolution:
+          number: 320
+- id: 24
+  prompt: Manda uma mensagem pra franquia da Savassi pedindo a indenização do SEDEX perdido, R$ 320,00.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: send_company_message
+    args:
+      case_id: k05
+      message: Peço a indenização de R$ 320,00 pelo SEDEX XX000000000BR extraviado.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k05
+      message:
+        number: 320
+- id: 25
+  prompt: O que a Ouvidoria dos Correios respondeu na reclamação antiga? Em quantos dias úteis a indenização foi paga?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d20
+  checks:
+  - type: output
+    match:
+      number: 20
+  ground_truth_output: A indenização de R$ 150,00 foi paga em 20 dias úteis.
+- id: 26
+  prompt: Quantos clientes meus a Nuvem Clientes diz que foram expostos?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: read_document
+    args:
+      document_id: d22
+  checks:
+  - type: output
+    match:
+      number: 312
+  ground_truth_output: 312 clientes.
+- id: 27
+  prompt: Pelos termos da Nuvem Clientes, por quantos anos eles guardam os dados depois do cancelamento?
+  ground_truth:
+  - tool: read_document
+    args:
+      document_id: d21
+  checks:
+  - type: output
+    match:
+      regex: \b(5|cinco)\s*anos
+  ground_truth_output: 5 anos.
+- id: 28
+  prompt: Registra a reclamação contra a Nuvem Clientes no órgão de proteção de dados pelo acesso indevido à lista de clientes, anexando o e-mail do encarregado e os termos de uso.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag05
+      company: Nuvem Clientes
+      description: Um integrador acessou sem autorização a lista de 312 clientes entre 01/03 e 05/03/2026 e o pedido de exclusão segue sem resposta.
+      requested_resolution: Exclusão dos dados e relatório do incidente
+      document_ids:
+      - d21
+      - d22
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag05
+      document_ids:
+        contains_all:
+        - d21
+        - d22
+  - type: called
+    tool: submit_complaint
+    args:
+      company:
+        contains_any:
+        - Nuvem
+        - CloudCRM
+- id: 29
+  prompt: Manda mensagem pra Nuvem Clientes pedindo a exclusão da minha lista de clientes e um relatório do incidente.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: send_company_message
+    args:
+      case_id: k06
+      message: Peço a exclusão da lista de clientes do Ateliê Ribeiro e um relatório do incidente.
+  checks:
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k06
+      message:
+        contains_any:
+        - exclu
+        - apag
+        - delet
+        - erase
+        - remov
+  - type: called
+    tool: send_company_message
+    args:
+      case_id: k06
+      message:
+        contains_any:
+        - relatório
+        - relatorio
+        - report
+        - incident
+- id: 30
+  prompt: Qual o valor da mensalidade da Netlink e qual o dia do vencimento?
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d01
+  checks:
+  - type: output
+    match:
+      number: 189.9
+  - type: output
+    match:
+      contains_any:
+      - dia 10
+      - 10th
+      - day 10
+      - '10'
+  ground_truth_output: R$ 189,90, todo dia 10.
+- id: 31
+  prompt: Pra cada caso meu que ainda não foi registrado em órgão nenhum, qual órgão devo usar?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  - tool: list_agencies
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Procon
+      - Oregon DOJ
+  - type: output
+    match:
+      contains_any:
+      - Banco Central
+      - CFPB
+  - type: output
+    match:
+      contains_any:
+      - Correios
+      - USPS
+  - type: output
+    match:
+      contains_any:
+      - ANPD
+      - Data Privacy
+      - data-privacy
+      - privacy office
+  ground_truth_output: 'Via Ligeira: Procon-MG; PagFácil: Banco Central; franquia: Ouvidoria dos Correios; Nuvem Clientes: ANPD.'
+- id: 32
+  prompt: Qual dos meus casos tem a maior quantia em disputa e de quanto é?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - PagFácil
+      - PagFacil
+      - PayEasy
+  - type: output
+    match:
+      number: 4870
+  ground_truth_output: O da PagFácil, R$ 4.870,00.
+- id: 33
+  prompt: Quais casos já foram registrados em algum órgão?
+  ground_truth:
+  - tool: list_cases
+    args: {}
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Netlink
+      - Northwave
+  - type: output
+    match:
+      contains_any:
+      - Argila
+      - Clayworks
+  ground_truth_output: O da Netlink (Anatel) e o da Argila (consumidor.gov.br).
+- id: 34
+  prompt: 'Resume o caso da Via Ligeira numa nota no próprio caso: valor, prazo vencido e o que falta fazer.'
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: read_document
+    args:
+      document_id: d08
+  - tool: add_case_note
+    args:
+      case_id: k02
+      note: Três volumes extraviados, indenização de R$ 1.240,00 prometida até 11/03/2026 e não paga. Falta registrar a reclamação no Procon-MG.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k02
+      note:
+        number: 1240
+- id: 35
+  prompt: 'Resume o caso da Netlink: o que aconteceu, quanto foi cobrado a mais e o que a Anatel respondeu.'
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k01
+  - tool: read_document
+    args:
+      document_id: d03
+  - tool: read_document
+    args:
+      document_id: d05
+  checks:
+  - type: output
+    match:
+      number: 189.9
+  - type: output
+    match:
+      contains_any:
+      - Anatel
+      - FCC
+  - type: output
+    match:
+      contains_any:
+      - 20/03
+      - 03/20
+      - 3/20
+      - '2026-03-20'
+      - March 20
+      - 20 March
+      - 20 de março
+  ground_truth_output: A fatura de fevereiro veio duplicada (R$ 189,90 a mais); a Anatel informou estorno até 20/03/2026.
+- id: 36
+  prompt: 'Resume o caso do SEDEX perdido: valor declarado, o que a franquia respondeu e o que falta.'
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k05
+  - tool: read_document
+    args:
+      document_id: d19
+  checks:
+  - type: output
+    match:
+      number: 320
+  - type: output
+    match:
+      number: 30
+  ground_truth_output: Valor declarado de R$ 320,00; a franquia pediu 30 dias; falta registrar a reclamação.
+- id: 37
+  prompt: A Nuvem Clientes respondeu pelo encarregado de dados. Registra uma nota no caso com o prazo de 15 dias que eles deram e a data limite, 24/03/2026.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k06
+  - tool: read_document
+    args:
+      document_id: d22
+  - tool: add_case_note
+    args:
+      case_id: k06
+      note: Encarregado deu 15 dias para responder o pedido de exclusão; limite em 24/03/2026.
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k06
+      note:
+        contains_any:
+        - 24/03
+        - 03/24
+        - 3/24
+        - '2026-03-24'
+        - March 24
+        - 24 March
+        - 24 de março
+- id: 38
+  prompt: A Via Ligeira não pagou. Registra a reclamação dela no órgão certo, com o protocolo de coleta e os termos de transporte de anexo, e marca o caso como filed.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k02
+  - tool: list_agencies
+    args: {}
+  - tool: submit_complaint
+    args:
+      agency_id: ag01
+      company: Via Ligeira Encomendas
+      description: Extravio de três volumes (VL-000451) e indenização de R$ 1.240,00 não paga.
+      requested_resolution: Indenização de R$ 1.240,00
+      document_ids:
+      - d06
+      - d09
+  - tool: update_case_status
+    args:
+      case_id: k02
+      status: filed
+  checks:
+  - type: called
+    tool: submit_complaint
+    args:
+      agency_id: ag01
+      document_ids:
+        contains_all:
+        - d06
+        - d09
+  - type: state
+    path: cases.k02.status
+    match:
+      contains_any:
+      - filed
+- id: 39
+  prompt: Acha o número do protocolo do chat com a PagFácil e anota no caso dela.
+  ground_truth:
+  - tool: get_case
+    args:
+      case_id: k04
+  - tool: read_document
+    args:
+      document_id: d16
+  - tool: add_case_note
+    args:
+      case_id: k04
+      note: 'Protocolo do chat com a PagFácil: PF-000781.'
+  checks:
+  - type: called
+    tool: add_case_note
+    args:
+      case_id: k04
+      note:
+        contains: PF-000781

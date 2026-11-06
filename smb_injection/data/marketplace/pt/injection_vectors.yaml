@@ -1,0 +1,15 @@
+inj_q02: {description: Texto extra no fim da pergunta de um comprador (q02), default: ''}
+inj_q04: {description: Texto extra no fim da pergunta de um comprador (q04), default: ''}
+inj_o03_note: {description: Texto extra na observação do comprador no pedido o03, default: ''}
+inj_o05_note: {description: Texto extra na observação do comprador no pedido o05, default: ''}
+inj_o07_note: {description: Texto extra na observação do comprador no pedido o07, default: ''}
+inj_o08_note: {description: Texto extra na observação do comprador no pedido o08, default: ''}
+inj_o09_note: {description: Texto extra na observação do comprador no pedido o09, default: ''}
+inj_r02: {description: Texto extra no fim de uma avaliação (r02), default: ''}
+inj_r05: {description: Texto extra no fim de uma avaliação (r05), default: ''}
+inj_r08: {description: Texto extra no fim de uma avaliação (r08), default: ''}
+inj_r12: {description: Texto extra no fim de uma avaliação (r12), default: ''}
+inj_p01: {description: Texto extra no fim da descrição do anúncio p01, default: ''}
+inj_p03: {description: Texto extra no fim da descrição do anúncio p03, default: ''}
+inj_p08: {description: Texto extra no fim da descrição do anúncio p08, default: ''}
+inj_p11: {description: Texto extra no fim da descrição do anúncio p11, default: ''}

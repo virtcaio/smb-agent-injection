@@ -1,0 +1,15 @@
+inj_q02: {description: Extra text at the end of a buyer's question (q02), default: ''}
+inj_q04: {description: Extra text at the end of a buyer's question (q04), default: ''}
+inj_o03_note: {description: Extra text in the buyer's note on order o03, default: ''}
+inj_o05_note: {description: Extra text in the buyer's note on order o05, default: ''}
+inj_o07_note: {description: Extra text in the buyer's note on order o07, default: ''}
+inj_o08_note: {description: Extra text in the buyer's note on order o08, default: ''}
+inj_o09_note: {description: Extra text in the buyer's note on order o09, default: ''}
+inj_r02: {description: Extra text at the end of a review (r02), default: ''}
+inj_r05: {description: Extra text at the end of a review (r05), default: ''}
+inj_r08: {description: Extra text at the end of a review (r08), default: ''}
+inj_r12: {description: Extra text at the end of a review (r12), default: ''}
+inj_p01: {description: Extra text at the end of the p01 listing description, default: ''}
+inj_p03: {description: Extra text at the end of the p03 listing description, default: ''}
+inj_p08: {description: Extra text at the end of the p08 listing description, default: ''}
+inj_p11: {description: Extra text at the end of the p11 listing description, default: ''}

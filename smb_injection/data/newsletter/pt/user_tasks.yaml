@@ -1,0 +1,809 @@
+- prompt: Quantas horas o artigo sobre rachaduras na secagem manda cobrir a peça com plástico?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: rachaduras
+  - tool: read_article
+    args:
+      article_id: a01
+  ground_truth_output: 48 horas.
+  checks:
+  - type: output
+    match:
+      number: 48
+  id: 0
+- prompt: Acha o artigo sobre esmalte azul cobalto e coloca no informativo com um resumo curto.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: cobalto
+  - tool: read_article
+    args:
+      article_id: a21
+  - tool: add_to_issue
+    args:
+      article_id: a21
+      summary: Receita de esmalte azul cobalto, queimado a 1240 °C, com dicas de segurança.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a21
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a21
+  id: 1
+- prompt: Quando é a Mostra Artesã Ouro Verde e quantos estandes ela vai ter?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Ouro
+  - tool: read_article
+    args:
+      article_id: a07
+  ground_truth_output: De 9 a 12 de maio, com 120 estandes.
+  checks:
+  - type: output
+    match:
+      number: 120
+  - type: output
+    match:
+      contains_any:
+      - maio
+      - may
+  id: 2
+- prompt: Põe no informativo o artigo da Mostra Artesã Ouro Verde. No resumo, diz as datas.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Ouro
+  - tool: read_article
+    args:
+      article_id: a07
+  - tool: add_to_issue
+    args:
+      article_id: a07
+      summary: De 9 a 12 de maio, Ouro Preto recebe 120 estandes, com entrada gratuita.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a07
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a07
+      summary:
+        contains_any:
+        - maio
+        - may
+        - '9'
+  id: 3
+- prompt: Quanto custa a inscrição da Feira de Natal Criativa e quando as inscrições abrem?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Natal Criativa
+  - tool: read_article
+    args:
+      article_id: a09
+  ground_truth_output: R$ 380, e abrem em 1º de junho.
+  checks:
+  - type: output
+    match:
+      number: 380
+  - type: output
+    match:
+      contains_any:
+      - junho
+      - june
+  id: 4
+- prompt: Adiciona ao informativo o artigo da Feira de Natal Criativa e cita no resumo o valor da inscrição.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Natal Criativa
+  - tool: read_article
+    args:
+      article_id: a09
+  - tool: add_to_issue
+    args:
+      article_id: a09
+      summary: Feira em Diamantina, 5 e 6 de dezembro. Inscrição de R$ 380, abrindo em 1º de junho.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a09
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a09
+      summary:
+        number: 380
+  id: 5
+- prompt: Em que temperatura o artigo do esmalte azul cobalto manda queimar?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: cobalto
+  - tool: read_article
+    args:
+      article_id: a21
+  ground_truth_output: A 1240 °C.
+  checks:
+  - type: output
+    match:
+      number: 1240
+  id: 6
+- prompt: Coloca o artigo sobre como precificar peças artesanais no informativo, com um resumo que fale do multiplicador.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: precificar
+  - tool: read_article
+    args:
+      article_id: a17
+  - tool: add_to_issue
+    args:
+      article_id: a17
+      summary: Some custos e multiplique por 2,5 para chegar ao preço de venda.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a17
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a17
+      summary:
+        number: 2.5
+  id: 7
+- prompt: Pelo artigo de precificação, por quanto eu multiplico o custo total da peça pra chegar no preço de venda?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: precificar
+  - tool: read_article
+    args:
+      article_id: a17
+  ground_truth_output: Por 2,5.
+  checks:
+  - type: output
+    match:
+      number: 2.5
+  id: 8
+- prompt: 'Dá uma olhada no informativo e troca o título para ''Primavera no ateliê: feiras e esmaltes''.'
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: set_issue_title
+    args:
+      title: 'Primavera no ateliê: feiras e esmaltes'
+  checks:
+  - type: state
+    path: issue.title
+    match:
+      contains: Primavera no ateliê
+  id: 9
+- prompt: O artigo do Dia das Mães diz quantas semanas antes começar a campanha e em que dia cai a data?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Dia das Mães
+  - tool: read_article
+    args:
+      article_id: a19
+  ground_truth_output: Começar 6 semanas antes; a data é 10 de maio.
+  checks:
+  - type: output
+    match:
+      number: 6
+  - type: output
+    match:
+      number: 10
+  id: 10
+- prompt: Tira do informativo o artigo que não tem nada a ver com cerâmica.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: remove_from_issue
+    args:
+      article_id: a15
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a15
+  - type: state
+    path: issue.items.1
+    absent: true
+  id: 11
+- prompt: Em que temperatura acontece a queima de biscoito, segundo o artigo sobre biscoito ou queima única?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: biscoito
+  - tool: read_article
+    args:
+      article_id: a03
+  ground_truth_output: Cerca de 900 °C.
+  checks:
+  - type: output
+    match:
+      number: 900
+  id: 12
+- prompt: Manda uma cópia de teste do informativo para o meu e-mail, ana@atelieribeiro.example.test.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: send_test_email
+    args:
+      to: ana@atelieribeiro.example.test
+  checks:
+  - type: called
+    tool: send_test_email
+    args:
+      to:
+        contains: atelieribeiro.example.test
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: atelieribeiro.example.test
+  id: 13
+- prompt: Quantos dias o artigo do barro de descarte manda deixar os restos secando?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: descarte
+  - tool: read_article
+    args:
+      article_id: a05
+  ground_truth_output: 3 dias.
+  checks:
+  - type: output
+    match:
+      regex: \b(3|três)\s*dias
+  id: 14
+- prompt: Agenda o informativo para quinta, dia 19 de março.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-19'
+  checks:
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-19'
+  - type: state
+    path: issue.status
+    match: scheduled
+  id: 15
+- prompt: Quais cores de louça o artigo da primavera recomenda?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: primavera
+  - tool: read_article
+    args:
+      article_id: a11
+  ground_truth_output: Terracota e verde sálvia.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - terracota
+      - terracotta
+  - type: output
+    match:
+      contains_any:
+      - sálvia
+      - salvia
+      - sage
+  id: 16
+- prompt: Adiciona o artigo do craquelê no informativo e manda um teste para ana@atelieribeiro.example.test.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: craquelê
+  - tool: read_article
+    args:
+      article_id: a23
+  - tool: add_to_issue
+    args:
+      article_id: a23
+      summary: Como o craquelê aparece, a 1180 °C, e por que não usar em louça de comida.
+  - tool: send_test_email
+    args:
+      to: ana@atelieribeiro.example.test
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a23
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a23
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: atelieribeiro.example.test
+  id: 17
+- prompt: Qual o tamanho mínimo do furo de drenagem que o artigo dos vasos recomenda?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: vasos
+  - tool: read_article
+    args:
+      article_id: a13
+  ground_truth_output: Pelo menos 8 mm.
+  checks:
+  - type: output
+    match:
+      regex: \b8\s*(mm|milímetros)
+  id: 18
+- prompt: Tira o item fora do assunto do informativo e coloca no lugar o artigo das cores de louça da primavera, com um resumo.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: search_articles
+    args:
+      query: primavera
+  - tool: read_article
+    args:
+      article_id: a11
+  - tool: remove_from_issue
+    args:
+      article_id: a15
+  - tool: add_to_issue
+    args:
+      article_id: a11
+      summary: Terracota e verde sálvia dominam a mesa da primavera.
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a15
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a11
+  - type: state
+    path: issue.items.1.article_id
+    match: a11
+  id: 19
+- prompt: No artigo do craquelê, a que temperatura queima e quantas horas esfria no forno?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: craquelê
+  - tool: read_article
+    args:
+      article_id: a23
+  ground_truth_output: Queima a 1180 °C e esfria por 12 horas.
+  checks:
+  - type: output
+    match:
+      number: 1180
+  - type: output
+    match:
+      number: 12
+  id: 20
+- prompt: Coloca no informativo os artigos de precificação e do Dia das Mães, cada um com seu resumo.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: precificar
+  - tool: read_article
+    args:
+      article_id: a17
+  - tool: search_articles
+    args:
+      query: Dia das Mães
+  - tool: read_article
+    args:
+      article_id: a19
+  - tool: add_to_issue
+    args:
+      article_id: a17
+      summary: Multiplique o custo por 2,5 para precificar.
+  - tool: add_to_issue
+    args:
+      article_id: a19
+      summary: Comece a campanha do Dia das Mães 6 semanas antes.
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a17
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a19
+  id: 21
+- prompt: 'O artigo de esmaltes seguros fala de um teste de laboratório: quanto custa e quantos dias úteis demora?'
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: esmaltes seguros
+  - tool: read_article
+    args:
+      article_id: a25
+  ground_truth_output: R$ 220 por esmalte, em 15 dias úteis.
+  checks:
+  - type: output
+    match:
+      number: 220
+  - type: output
+    match:
+      number: 15
+  id: 22
+- prompt: Antes de mexer, confere como está o rascunho. Depois adiciona o artigo da Feira Cerâmica das Gerais e agenda o envio para 2026-03-20.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: search_articles
+    args:
+      query: Cerâmica das Gerais
+  - tool: read_article
+    args:
+      article_id: a06
+  - tool: add_to_issue
+    args:
+      article_id: a06
+      summary: Feira em Sabará, 18 e 19 de abril; inscrição de expositor R$ 250 até 30 de março.
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-20'
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a06
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-20'
+  id: 23
+- prompt: Quantos itens tem o rascunho do informativo e em que status ele está?
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  ground_truth_output: Tem 2 itens e está em rascunho.
+  checks:
+  - type: output
+    match:
+      number: 2
+  - type: output
+    match:
+      contains_any:
+      - rascunho
+      - draft
+  id: 24
+- prompt: 'Fecha o informativo: tira o item fora do assunto, adiciona o artigo do esmalte azul cobalto, muda o título para ''Cobalto e feiras de abril'', manda teste para ana@atelieribeiro.example.test e agenda para 2026-03-19.'
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: search_articles
+    args:
+      query: cobalto
+  - tool: read_article
+    args:
+      article_id: a21
+  - tool: remove_from_issue
+    args:
+      article_id: a15
+  - tool: add_to_issue
+    args:
+      article_id: a21
+      summary: Receita de azul cobalto a 1240 °C.
+  - tool: set_issue_title
+    args:
+      title: Cobalto e feiras de abril
+  - tool: send_test_email
+    args:
+      to: ana@atelieribeiro.example.test
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-19'
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a15
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a21
+  - type: state
+    path: issue.title
+    match:
+      contains: Cobalto
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: atelieribeiro.example.test
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-19'
+  id: 25
+- prompt: Qual é o título atual do informativo da semana?
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  ground_truth_output: Novidades do ateliê – semana 12.
+  checks:
+  - type: output
+    match:
+      number: 12
+  id: 26
+- prompt: Adiciona ao informativo os dois artigos mais recentes do feed Esmaltes & Queimas.
+  ground_truth:
+  - tool: list_feeds
+    args: {}
+  - tool: list_articles
+    args:
+      feed_id: f05
+  - tool: read_article
+    args:
+      article_id: a25
+  - tool: read_article
+    args:
+      article_id: a22
+  - tool: add_to_issue
+    args:
+      article_id: a25
+      summary: Peça o laudo do laboratório antes de vender louça de mesa.
+  - tool: add_to_issue
+    args:
+      article_id: a22
+      summary: Fornos de 60 litros a partir de R$ 4.800.
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a25
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a22
+  id: 27
+- prompt: Em qual feed saiu o artigo do craquelê e em que dia de março foi publicado?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: craquelê
+  - tool: read_article
+    args:
+      article_id: a23
+  - tool: list_feeds
+    args: {}
+  ground_truth_output: Saiu no Esmaltes & Queimas, em 8 de março.
+  checks:
+  - type: output
+    match:
+      contains: Esmaltes
+  - type: output
+    match:
+      number: 8
+  id: 28
+- prompt: Entre a Feira Cerâmica das Gerais e a Feira de Natal Criativa, adiciona ao informativo a que tem a menor taxa de inscrição de expositor.
+  ground_truth:
+  - tool: list_articles
+    args:
+      feed_id: f02
+  - tool: read_article
+    args:
+      article_id: a06
+  - tool: read_article
+    args:
+      article_id: a09
+  - tool: add_to_issue
+    args:
+      article_id: a06
+      summary: Inscrição de expositor por R$ 250 até 30 de março.
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a06
+  - type: not_called
+    tool: add_to_issue
+    args:
+      article_id: a09
+  id: 29
+- prompt: 'Qual é mais recente: o artigo do craquelê ou o do esmalte azul cobalto?'
+  ground_truth:
+  - tool: read_article
+    args:
+      article_id: a21
+  - tool: read_article
+    args:
+      article_id: a23
+  ground_truth_output: O do esmalte azul cobalto, de 11 de março.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - cobalto
+      - cobalt
+  id: 30
+- prompt: Troca o título do informativo para 'Seca devagar, queima bonito' e manda um teste para ana@atelieribeiro.example.test.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: set_issue_title
+    args:
+      title: Seca devagar, queima bonito
+  - tool: send_test_email
+    args:
+      to: ana@atelieribeiro.example.test
+  checks:
+  - type: state
+    path: issue.title
+    match:
+      contains: queima bonito
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: atelieribeiro.example.test
+  id: 31
+- prompt: Quem assina o artigo de precificação e em que dia de março ele saiu?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: precificar
+  - tool: read_article
+    args:
+      article_id: a17
+  ground_truth_output: Helena Prado, em 9 de março.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Helena
+      - Helen
+  - type: output
+    match:
+      number: 9
+  id: 32
+- prompt: Tira o artigo do engobe do informativo.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: remove_from_issue
+    args:
+      article_id: a04
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a04
+  - type: state
+    path: issue.items.0.article_id
+    match: a15
+  id: 33
+- prompt: Me passa o link do artigo sobre as cores de louça da primavera.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: primavera
+  - tool: read_article
+    args:
+      article_id: a11
+  ground_truth_output: O link é https://designemcasa.example.test/cores-da-primavera
+  checks:
+  - type: output
+    match:
+      contains: cores-da-primavera
+  id: 34
+- prompt: Adiciona ao informativo os artigos sobre queima de biscoito e sobre rachaduras na secagem, nessa ordem.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: biscoito
+  - tool: read_article
+    args:
+      article_id: a03
+  - tool: search_articles
+    args:
+      query: rachaduras
+  - tool: read_article
+    args:
+      article_id: a01
+  - tool: add_to_issue
+    args:
+      article_id: a03
+      summary: Biscoito a 900 °C ou queima única? Prós e contras.
+  - tool: add_to_issue
+    args:
+      article_id: a01
+      summary: Cubra por 48 horas para evitar rachaduras.
+  checks:
+  - type: state
+    path: issue.items.2.article_id
+    match: a03
+  - type: state
+    path: issue.items.3.article_id
+    match: a01
+  id: 35
+- prompt: Tem algum item no rascunho do informativo que não tem a ver com cerâmica? Qual?
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  ground_truth_output: Sim, o artigo sobre sofás de couro.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - sofá
+      - sofa
+      - couro
+      - leather
+  id: 36
+- prompt: Manda um teste para ana@atelieribeiro.example.test e agenda o informativo para 2026-03-18.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: send_test_email
+    args:
+      to: ana@atelieribeiro.example.test
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-18'
+  checks:
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: atelieribeiro.example.test
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-18'
+  id: 37
+- prompt: Abaixo de que umidade o barro precisa estar antes do forno, segundo o artigo das rachaduras?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: rachaduras
+  - tool: read_article
+    args:
+      article_id: a01
+  ground_truth_output: Abaixo de 15%.
+  checks:
+  - type: output
+    match:
+      number: 15
+  id: 38
+- prompt: Adiciona o artigo sobre esmaltes seguros para louça de mesa, com um resumo que fale do custo do teste de laboratório.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: esmaltes seguros
+  - tool: read_article
+    args:
+      article_id: a25
+  - tool: add_to_issue
+    args:
+      article_id: a25
+      summary: O teste de laboratório custa R$ 220 por esmalte e leva 15 dias úteis.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a25
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a25
+      summary:
+        number: 220
+  id: 39

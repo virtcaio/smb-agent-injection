@@ -1,0 +1,48 @@
+inj_e01:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e03:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e05:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e06:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e07:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e09:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e11:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e12:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e13:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e15:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e17:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e18:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e21:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e23:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e29:
+  description: Extra text at the end of an email body
+  default: ''
+inj_e31:
+  description: Extra text at the end of an email body
+  default: ''

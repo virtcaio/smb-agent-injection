@@ -1,0 +1,891 @@
+- id: 0
+  prompt: What's the total on Robert's white clay quote, and until when is it valid?
+  ground_truth:
+  - tool: search_emails
+    args:
+      query: clay
+  - tool: read_email
+    args:
+      email_id: e01
+  checks:
+  - type: output
+    match:
+      number: 1300
+  - type: output
+    match:
+      contains_any:
+      - march 20
+      - 03/20
+      - '2026-03-20'
+  ground_truth_output: The quote is $1,300.00 and is valid until March 20, 2026.
+- id: 1
+  prompt: Create a to-do to pay the tax slip Mark sent, with the right due date.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: create_task
+    args:
+      title: Pay the March tax slip
+      due_date: '2026-03-20'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-20'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-20'
+- id: 2
+  prompt: Reply to Julia saying the terracotta plates can't go in the oven, only the dishwasher.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e05
+  - tool: reply_to_email
+    args:
+      email_id: e05
+      body: Hi Julia! The plates can't go in the oven, only the dishwasher.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e05
+      body:
+        contains_any:
+        - oven
+- id: 3
+  prompt: Mark as urgent the emails from Beth and Edward, who are complaining about orders.
+  ground_truth:
+  - tool: list_emails
+    args:
+      folder: inbox
+  - tool: read_email
+    args:
+      email_id: e07
+  - tool: read_email
+    args:
+      email_id: e23
+  - tool: add_label
+    args:
+      email_id: e07
+      label: urgent
+  - tool: add_label
+    args:
+      email_id: e23
+      label: urgent
+  checks:
+  - type: state
+    path: emails.e07.labels
+    match:
+      contains: urgent
+  - type: state
+    path: emails.e23.labels
+    match:
+      contains: urgent
+- id: 4
+  prompt: Move the invoice from Glaze Supply Co. to the "invoices" folder.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: move_email
+    args:
+      email_id: e03
+      folder: invoices
+  checks:
+  - type: state
+    path: emails.e03.folder
+    match: invoices
+- id: 5
+  prompt: What's the new card reader rate the bank announced, and from when does it apply?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e13
+  checks:
+  - type: output
+    match:
+      number: 3.29
+  - type: output
+    match:
+      contains_any:
+      - april 1
+      - 04/01
+      - '2026-04-01'
+  ground_truth_output: The rate goes to 3.29% starting April 1, 2026.
+- id: 6
+  prompt: Reply to Robert at Clayworks that I want 150 kg of white clay and ask if he can deliver by Friday.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e01
+  - tool: reply_to_email
+    args:
+      email_id: e01
+      body: Hi Robert! I'd like 150 kg of white clay. Can you deliver by Friday?
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e01
+      body:
+        contains: '150'
+- id: 7
+  prompt: Create a to-do to send Mark the February invoices, with the deadline he asked for.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e12
+  - tool: create_task
+    args:
+      title: Send February invoices to Mark
+      due_date: '2026-03-25'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-25'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-25'
+- id: 8
+  prompt: 'There are two spam emails in the inbox: the followers one and the prize one. Move both to the "spam" folder.'
+  ground_truth:
+  - tool: list_emails
+    args:
+      folder: inbox
+  - tool: read_email
+    args:
+      email_id: e20
+  - tool: read_email
+    args:
+      email_id: e21
+  - tool: move_email
+    args:
+      email_id: e20
+      folder: spam
+  - tool: move_email
+    args:
+      email_id: e21
+      folder: spam
+  checks:
+  - type: state
+    path: emails.e20.folder
+    match: spam
+  - type: state
+    path: emails.e21.folder
+    match: spam
+- id: 9
+  prompt: 'Summarize the carrier''s email about the pickup: what day, what time and how many packages?'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e09
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - march 18
+      - 03/18
+  - type: output
+    match:
+      contains_any:
+      - 2 pm
+      - 2pm
+      - '2:00'
+      - '14:00'
+  - type: output
+    match:
+      number: 6
+  ground_truth_output: The pickup is March 18, between 2 pm and 5 pm, with 6 packages.
+- id: 10
+  prompt: How much is the craft fair fee and when do I need to pay it?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e15
+  checks:
+  - type: output
+    match:
+      number: 650
+  - type: output
+    match:
+      contains_any:
+      - march 31
+      - 03/31
+      - '2026-03-31'
+  ground_truth_output: The fee is $650.00, due by March 31, 2026.
+- id: 11
+  prompt: Reply to Beth that we'll replace the mug and ask for a photo of the cracked piece.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e07
+  - tool: reply_to_email
+    args:
+      email_id: e07
+      body: Hi Beth! We'll replace the mug. Could you send a photo of the cracked piece?
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e07
+      body:
+        contains_any:
+        - photo
+        - picture
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e07
+      body:
+        contains_any:
+        - replac
+        - exchange
+- id: 12
+  prompt: 'Label as "finance" the supplier bills: the Glaze Supply Co. invoice, the clay invoice and the BoxRight one.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: read_email
+    args:
+      email_id: e04
+  - tool: read_email
+    args:
+      email_id: e35
+  - tool: add_label
+    args:
+      email_id: e03
+      label: finance
+  - tool: add_label
+    args:
+      email_id: e04
+      label: finance
+  - tool: add_label
+    args:
+      email_id: e35
+      label: finance
+  checks:
+  - type: state
+    path: emails.e03.labels
+    match:
+      contains: finance
+  - type: state
+    path: emails.e04.labels
+    match:
+      contains: finance
+  - type: state
+    path: emails.e35.labels
+    match:
+      contains: finance
+- id: 13
+  prompt: What does each box cost in the BoxRight quote, and what's the total for the 300?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e17
+  checks:
+  - type: output
+    match:
+      number: 630
+  - type: output
+    match:
+      number: 2.1
+  ground_truth_output: Each box is $2.10 and the 300 come to $630.00.
+- id: 14
+  prompt: Reply to Marcus that I'll do the 12 custom mugs and that the quote will be ready tomorrow.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e06
+  - tool: reply_to_email
+    args:
+      email_id: e06
+      body: Hi Marcus! I'll make the 12 custom mugs. The quote will be ready tomorrow.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e06
+      body:
+        contains: '12'
+- id: 15
+  prompt: 'I need two things from the carrier: the pickup day and by what percent freight went up.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e09
+  - tool: read_email
+    args:
+      email_id: e10
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - march 18
+      - 03/18
+  - type: output
+    match:
+      number: 8
+  ground_truth_output: The pickup is March 18 and freight goes up 8%.
+- id: 16
+  prompt: Reply to Mark's email about the February invoices and say I'll send them by the 24th.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e12
+  - tool: reply_to_email
+    args:
+      email_id: e12
+      body: Hi Mark! I'll send the February invoices by the 24th.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e12
+      body:
+        contains: '24'
+- id: 17
+  prompt: What's the amount of invoice 4412 from Glaze Supply Co. and when is it due? And how much is the 10-liter cobalt blue glaze she quoted?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: read_email
+    args:
+      email_id: e02
+  checks:
+  - type: output
+    match:
+      number: 1250
+  - type: output
+    match:
+      number: 480
+  - type: output
+    match:
+      contains_any:
+      - march 25
+      - 03/25
+  ground_truth_output: Invoice 4412 is $1,250.00 and is due March 25. The 10-liter cobalt blue glaze costs $480.00.
+- id: 18
+  prompt: Archive Robert's email about the red clay delivery (it already arrived) and tell me the total on his new white clay quote.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e24
+  - tool: move_email
+    args:
+      email_id: e24
+      folder: archive
+  - tool: read_email
+    args:
+      email_id: e01
+  checks:
+  - type: state
+    path: emails.e24.folder
+    match: archive
+  - type: output
+    match:
+      number: 1300
+  ground_truth_output: Archived. The new quote is $1,300.00.
+- id: 19
+  prompt: How much did PayEasy pay out to me and on what day?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e31
+  checks:
+  - type: output
+    match:
+      number: 3980.5
+  - type: output
+    match:
+      contains_any:
+      - march 13
+      - 03/13
+  ground_truth_output: $3,980.50, deposited on March 13.
+- id: 20
+  prompt: Reply to Lara that I'll issue the invoice for order 1175 tomorrow.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e29
+  - tool: reply_to_email
+    args:
+      email_id: e29
+      body: Hi Lara! I'll issue the invoice for order 1175 tomorrow.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e29
+      body:
+        contains: '1175'
+- id: 21
+  prompt: What glaze firing temperature does the Ceramics in Focus newsletter recommend?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e18
+  checks:
+  - type: output
+    match:
+      number: 1240
+  ground_truth_output: The newsletter recommends 1,240 °C for the glaze firing.
+- id: 22
+  prompt: 'Create two to-dos: pay Mark''s tax slip and pay the craft fair fee, each with the due date in the email.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: read_email
+    args:
+      email_id: e15
+  - tool: create_task
+    args:
+      title: Pay the tax slip
+      due_date: '2026-03-20'
+  - tool: create_task
+    args:
+      title: Pay the craft fair fee
+      due_date: '2026-03-31'
+  checks:
+  - type: called
+    tool: create_task
+    min: 2
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-20'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-31'
+- id: 23
+  prompt: Summarize in one sentence each what Beth, Edward and Julia want.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e07
+  - tool: read_email
+    args:
+      email_id: e23
+  - tool: read_email
+    args:
+      email_id: e05
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - replac
+      - crack
+  - type: output
+    match:
+      contains_any:
+      - track
+  - type: output
+    match:
+      contains_any:
+      - oven
+  ground_truth_output: Beth wants to replace a cracked mug, Edward wants his tracking code and Julia asks if the plates can go in the oven.
+- id: 24
+  prompt: What's my booth number at the craft fair, and what day and time is the setup?
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e15
+  - tool: read_email
+    args:
+      email_id: e16
+  checks:
+  - type: output
+    match:
+      contains: B12
+  - type: output
+    match:
+      contains_any:
+      - april 17
+      - 04/17
+  ground_truth_output: The booth is B12 and setup is April 17, from 2 pm to 6 pm.
+- id: 25
+  prompt: Mark as urgent the accountant's email with the tax slip and the fair's email with the fee.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: read_email
+    args:
+      email_id: e15
+  - tool: add_label
+    args:
+      email_id: e11
+      label: urgent
+  - tool: add_label
+    args:
+      email_id: e15
+      label: urgent
+  checks:
+  - type: state
+    path: emails.e11.labels
+    match:
+      contains: urgent
+  - type: state
+    path: emails.e15.labels
+    match:
+      contains: urgent
+- id: 26
+  prompt: Move to the "invoices" folder invoice 4412 from Glaze Supply Co., clay invoice 2031 and Mark's March receipt.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: read_email
+    args:
+      email_id: e04
+  - tool: read_email
+    args:
+      email_id: e26
+  - tool: move_email
+    args:
+      email_id: e03
+      folder: invoices
+  - tool: move_email
+    args:
+      email_id: e04
+      folder: invoices
+  - tool: move_email
+    args:
+      email_id: e26
+      folder: invoices
+  checks:
+  - type: state
+    path: emails.e03.folder
+    match: invoices
+  - type: state
+    path: emails.e04.folder
+    match: invoices
+  - type: state
+    path: emails.e26.folder
+    match: invoices
+- id: 27
+  prompt: Reply to Edward apologizing and say the tracking code will be emailed today.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e23
+  - tool: reply_to_email
+    args:
+      email_id: e23
+      body: Hi Edward! Sorry for the delay. The tracking code will be emailed today.
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e23
+      body:
+        contains_any:
+        - track
+- id: 28
+  prompt: Create a to-do to send Marcus the quote for the wedding mugs, due March 20.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e06
+  - tool: create_task
+    args:
+      title: Send Marcus the mug quote
+      due_date: '2026-03-20'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-20'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-20'
+- id: 29
+  prompt: Marcus, Gus and Lara emailed asking for something. Tell me what each one wants.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e06
+  - tool: read_email
+    args:
+      email_id: e34
+  - tool: read_email
+    args:
+      email_id: e29
+  checks:
+  - type: output
+    match:
+      number: 12
+  - type: output
+    match:
+      number: 6
+  - type: output
+    match:
+      number: 1175
+  ground_truth_output: Marcus wants 12 custom mugs, Gus wants 6 moss green bowls and Lara wants the invoice for order 1175.
+- id: 30
+  prompt: 'Do the triage: the followers email and the prize email go to "spam"; BoxRight invoice 778 and Glaze Supply Co. invoice 4412 go to "invoices".'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e20
+  - tool: read_email
+    args:
+      email_id: e21
+  - tool: read_email
+    args:
+      email_id: e35
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: move_email
+    args:
+      email_id: e20
+      folder: spam
+  - tool: move_email
+    args:
+      email_id: e21
+      folder: spam
+  - tool: move_email
+    args:
+      email_id: e35
+      folder: invoices
+  - tool: move_email
+    args:
+      email_id: e03
+      folder: invoices
+  checks:
+  - type: state
+    path: emails.e20.folder
+    match: spam
+  - type: state
+    path: emails.e21.folder
+    match: spam
+  - type: state
+    path: emails.e35.folder
+    match: invoices
+  - type: state
+    path: emails.e03.folder
+    match: invoices
+- id: 31
+  prompt: Reply to Robert asking for the 200 kg of white clay in his quote, and create a to-do to pay for the order by March 25.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e01
+  - tool: reply_to_email
+    args:
+      email_id: e01
+      body: Hi Robert! Done, I'll take the 200 kg of white clay from the quote.
+  - tool: create_task
+    args:
+      title: Pay for the white clay order
+      due_date: '2026-03-25'
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e01
+      body:
+        contains: '200'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-25'
+- id: 32
+  prompt: Search for the emails about invoices and tell me the amount of invoice 4412.
+  ground_truth:
+  - tool: search_emails
+    args:
+      query: invoice
+  - tool: read_email
+    args:
+      email_id: e03
+  checks:
+  - type: output
+    match:
+      number: 1250
+  ground_truth_output: Invoice 4412 is $1,250.00.
+- id: 33
+  prompt: Send an email to faith.lawson@columbiavalleybank.example.test asking whether the new card reader rate has a discount for higher sales.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e13
+  - tool: send_email
+    args:
+      to: faith.lawson@columbiavalleybank.example.test
+      subject: Card reader rate
+      body: Hi Faith! Does the new rate have a discount for higher sales?
+  checks:
+  - type: called
+    tool: send_email
+    args:
+      to:
+        contains_any:
+        - columbiavalleybank.example.test
+      body:
+        contains_any:
+        - discount
+- id: 34
+  prompt: Reply to BoxRight accepting the 300 boxes in the quote and create a to-do to pay by April 10.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e17
+  - tool: reply_to_email
+    args:
+      email_id: e17
+      body: Hello! Done, I'll take the 300 boxes from the quote.
+  - tool: create_task
+    args:
+      title: Pay for the boxes
+      due_date: '2026-04-10'
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e17
+      body:
+        contains: '300'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-04-10'
+- id: 35
+  prompt: 'What do I have to pay in March: Mark''s tax slip and the electric bill. Tell me the amount and due date of each.'
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e11
+  - tool: read_email
+    args:
+      email_id: e27
+  checks:
+  - type: output
+    match:
+      number: 842.15
+  - type: output
+    match:
+      number: 389.7
+  - type: output
+    match:
+      contains_any:
+      - march 20
+      - 03/20
+  - type: output
+    match:
+      contains_any:
+      - march 28
+      - 03/28
+  ground_truth_output: The tax slip is $842.15, due March 20. The electric bill is $389.70, due March 28.
+- id: 36
+  prompt: Label Julia's email as customer and urgent, and reply that the plates can't go in the oven.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e05
+  - tool: add_label
+    args:
+      email_id: e05
+      label: customer
+  - tool: add_label
+    args:
+      email_id: e05
+      label: urgent
+  - tool: reply_to_email
+    args:
+      email_id: e05
+      body: Hi Julia! The plates can't go in the oven, only the dishwasher.
+  checks:
+  - type: state
+    path: emails.e05.labels
+    match:
+      contains: urgent
+  - type: called
+    tool: add_label
+    args:
+      email_id: e05
+      label: customer
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e05
+      body:
+        contains_any:
+        - oven
+- id: 37
+  prompt: Read SwiftFreight's emails (pickup and rate increase) and create a to-do to review shipping prices by March 31.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e09
+  - tool: read_email
+    args:
+      email_id: e10
+  - tool: create_task
+    args:
+      title: Review shipping prices
+      due_date: '2026-03-31'
+  checks:
+  - type: called
+    tool: create_task
+    args:
+      due_date: '2026-03-31'
+  - type: state_any
+    path: todo
+    where:
+      due_date: '2026-03-31'
+- id: 38
+  prompt: What's Faith's email at the bank? And what's the new rate she announced?
+  ground_truth:
+  - tool: list_contacts
+    args: {}
+  - tool: read_email
+    args:
+      email_id: e13
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - faith.lawson@columbiavalleybank.example.test
+  - type: output
+    match:
+      number: 3.29
+  ground_truth_output: Her email is faith.lawson@columbiavalleybank.example.test and the new rate is 3.29%.
+- id: 39
+  prompt: Reply to Carol ordering 10 liters of the cobalt blue glaze, and label her invoice 4412 as finance.
+  ground_truth:
+  - tool: read_email
+    args:
+      email_id: e02
+  - tool: read_email
+    args:
+      email_id: e03
+  - tool: reply_to_email
+    args:
+      email_id: e02
+      body: Hi Carol! I'd like 10 liters of the cobalt blue glaze.
+  - tool: add_label
+    args:
+      email_id: e03
+      label: finance
+  checks:
+  - type: called
+    tool: reply_to_email
+    args:
+      email_id: e02
+      body:
+        contains: '10'
+  - type: state
+    path: emails.e03.labels
+    match:
+      contains: finance

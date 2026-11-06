@@ -1,0 +1,809 @@
+- prompt: How many hours does the article about cracks during drying say to keep the piece covered with plastic?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: cracks
+  - tool: read_article
+    args:
+      article_id: a01
+  ground_truth_output: 48 hours.
+  checks:
+  - type: output
+    match:
+      number: 48
+  id: 0
+- prompt: Find the article about cobalt blue glaze and add it to the newsletter with a short summary.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: cobalt
+  - tool: read_article
+    args:
+      article_id: a21
+  - tool: add_to_issue
+    args:
+      article_id: a21
+      summary: Cobalt blue glaze recipe fired to 1240 °C, with safety tips.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a21
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a21
+  id: 1
+- prompt: When is the Green Gold Makers Show and how many booths will it have?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Ouro
+  - tool: read_article
+    args:
+      article_id: a07
+  ground_truth_output: From May 9 to 12, with 120 booths.
+  checks:
+  - type: output
+    match:
+      number: 120
+  - type: output
+    match:
+      contains_any:
+      - maio
+      - may
+  id: 2
+- prompt: Add the Green Gold Makers Show article to the newsletter. Put the dates in the summary.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Ouro
+  - tool: read_article
+    args:
+      article_id: a07
+  - tool: add_to_issue
+    args:
+      article_id: a07
+      summary: From May 9 to 12, Ouro Preto hosts 120 booths, with free admission.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a07
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a07
+      summary:
+        contains_any:
+        - maio
+        - may
+        - '9'
+  id: 3
+- prompt: How much is registration for the Creative Holiday Fair and when does it open?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Creative Holiday
+  - tool: read_article
+    args:
+      article_id: a09
+  ground_truth_output: $380, and registration opens on June 1.
+  checks:
+  - type: output
+    match:
+      number: 380
+  - type: output
+    match:
+      contains_any:
+      - junho
+      - june
+  id: 4
+- prompt: Add the Creative Holiday Fair article to the newsletter and mention the registration fee in the summary.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Creative Holiday
+  - tool: read_article
+    args:
+      article_id: a09
+  - tool: add_to_issue
+    args:
+      article_id: a09
+      summary: Fair in Diamantina, December 5 and 6. Registration is $380, opening June 1.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a09
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a09
+      summary:
+        number: 380
+  id: 5
+- prompt: At what temperature does the cobalt blue glaze article say to fire?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: cobalt
+  - tool: read_article
+    args:
+      article_id: a21
+  ground_truth_output: At 1240 °C.
+  checks:
+  - type: output
+    match:
+      number: 1240
+  id: 6
+- prompt: Add the article on how to price handmade pieces to the newsletter, with a summary that mentions the multiplier.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: price handmade
+  - tool: read_article
+    args:
+      article_id: a17
+  - tool: add_to_issue
+    args:
+      article_id: a17
+      summary: Add up costs and multiply by 2.5 to reach the retail price.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a17
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a17
+      summary:
+        number: 2.5
+  id: 7
+- prompt: According to the pricing article, what do I multiply the total cost of a piece by to get the retail price?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: price handmade
+  - tool: read_article
+    args:
+      article_id: a17
+  ground_truth_output: By 2.5.
+  checks:
+  - type: output
+    match:
+      number: 2.5
+  id: 8
+- prompt: 'Take a look at the newsletter and change the title to ''Spring at the studio: fairs and glazes''.'
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: set_issue_title
+    args:
+      title: 'Spring at the studio: fairs and glazes'
+  checks:
+  - type: state
+    path: issue.title
+    match:
+      contains: Spring at the studio
+  id: 9
+- prompt: Does the Mother's Day article say how many weeks ahead to start the campaign and what day the holiday falls on?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: Mother's Day
+  - tool: read_article
+    args:
+      article_id: a19
+  ground_truth_output: Start 6 weeks ahead; the date is May 10.
+  checks:
+  - type: output
+    match:
+      number: 6
+  - type: output
+    match:
+      number: 10
+  id: 10
+- prompt: Remove the article that has nothing to do with ceramics from the newsletter.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: remove_from_issue
+    args:
+      article_id: a15
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a15
+  - type: state
+    path: issue.items.1
+    absent: true
+  id: 11
+- prompt: At what temperature does bisque firing happen, according to the bisque-or-single-firing article?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: bisque
+  - tool: read_article
+    args:
+      article_id: a03
+  ground_truth_output: About 900 °C.
+  checks:
+  - type: output
+    match:
+      number: 900
+  id: 12
+- prompt: Send a test copy of the newsletter to my email, emma@carterceramics.example.test.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: send_test_email
+    args:
+      to: emma@carterceramics.example.test
+  checks:
+  - type: called
+    tool: send_test_email
+    args:
+      to:
+        contains: carterceramics.example.test
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: carterceramics.example.test
+  id: 13
+- prompt: How many days does the scrap clay article say to let the scraps dry?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: scrap clay
+  - tool: read_article
+    args:
+      article_id: a05
+  ground_truth_output: 3 days.
+  checks:
+  - type: output
+    match:
+      regex: \b(3|three)\s*days
+  id: 14
+- prompt: Schedule the newsletter for Thursday, March 19.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-19'
+  checks:
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-19'
+  - type: state
+    path: issue.status
+    match: scheduled
+  id: 15
+- prompt: Which tableware colors does the spring article recommend?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: spring
+  - tool: read_article
+    args:
+      article_id: a11
+  ground_truth_output: Terracotta and sage green.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - terracota
+      - terracotta
+  - type: output
+    match:
+      contains_any:
+      - sálvia
+      - salvia
+      - sage
+  id: 16
+- prompt: Add the crackle article to the newsletter and send a test to emma@carterceramics.example.test.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: crackle
+  - tool: read_article
+    args:
+      article_id: a23
+  - tool: add_to_issue
+    args:
+      article_id: a23
+      summary: How crackle appears, at 1180 °C, and why not to use it on food surfaces.
+  - tool: send_test_email
+    args:
+      to: emma@carterceramics.example.test
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a23
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a23
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: carterceramics.example.test
+  id: 17
+- prompt: What is the minimum drainage hole size the pots article recommends?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: plant pot
+  - tool: read_article
+    args:
+      article_id: a13
+  ground_truth_output: At least 8 mm.
+  checks:
+  - type: output
+    match:
+      regex: \b8\s*(mm|millimet)
+  id: 18
+- prompt: Remove the off-topic item from the newsletter and add the spring tableware colors article in its place, with a summary.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: search_articles
+    args:
+      query: spring
+  - tool: read_article
+    args:
+      article_id: a11
+  - tool: remove_from_issue
+    args:
+      article_id: a15
+  - tool: add_to_issue
+    args:
+      article_id: a11
+      summary: Terracotta and sage green rule the spring table.
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a15
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a11
+  - type: state
+    path: issue.items.1.article_id
+    match: a11
+  id: 19
+- prompt: In the crackle article, what temperature does it fire to and how many hours does it cool in the kiln?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: crackle
+  - tool: read_article
+    args:
+      article_id: a23
+  ground_truth_output: Fire to 1180 °C and cool for 12 hours.
+  checks:
+  - type: output
+    match:
+      number: 1180
+  - type: output
+    match:
+      number: 12
+  id: 20
+- prompt: Add the pricing article and the Mother's Day article to the newsletter, each with its own summary.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: price handmade
+  - tool: read_article
+    args:
+      article_id: a17
+  - tool: search_articles
+    args:
+      query: Mother's Day
+  - tool: read_article
+    args:
+      article_id: a19
+  - tool: add_to_issue
+    args:
+      article_id: a17
+      summary: Multiply cost by 2.5 to set prices.
+  - tool: add_to_issue
+    args:
+      article_id: a19
+      summary: Start the Mother's Day campaign 6 weeks ahead.
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a17
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a19
+  id: 21
+- prompt: 'The food-safe glazes article mentions a lab test: how much does it cost and how many business days does it take?'
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: food-safe
+  - tool: read_article
+    args:
+      article_id: a25
+  ground_truth_output: $220 per glaze, in 15 business days.
+  checks:
+  - type: output
+    match:
+      number: 220
+  - type: output
+    match:
+      number: 15
+  id: 22
+- prompt: Check the draft first. Then add the Heartland Ceramics Fair article and schedule the send for 2026-03-20.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: search_articles
+    args:
+      query: Heartland
+  - tool: read_article
+    args:
+      article_id: a06
+  - tool: add_to_issue
+    args:
+      article_id: a06
+      summary: Fair in Sabará, April 18 and 19; vendor registration $250 until March 30.
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-20'
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a06
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-20'
+  id: 23
+- prompt: How many items does the newsletter draft have and what status is it in?
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  ground_truth_output: It has 2 items and it is a draft.
+  checks:
+  - type: output
+    match:
+      number: 2
+  - type: output
+    match:
+      contains_any:
+      - rascunho
+      - draft
+  id: 24
+- prompt: 'Wrap up the newsletter: remove the off-topic item, add the cobalt blue glaze article, change the title to ''Cobalt and April fairs'', send a test to emma@carterceramics.example.test and schedule it for 2026-03-19.'
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: search_articles
+    args:
+      query: cobalt
+  - tool: read_article
+    args:
+      article_id: a21
+  - tool: remove_from_issue
+    args:
+      article_id: a15
+  - tool: add_to_issue
+    args:
+      article_id: a21
+      summary: Cobalt blue recipe fired to 1240 °C.
+  - tool: set_issue_title
+    args:
+      title: Cobalt and April fairs
+  - tool: send_test_email
+    args:
+      to: emma@carterceramics.example.test
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-19'
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a15
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a21
+  - type: state
+    path: issue.title
+    match:
+      contains: Cobalt
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: carterceramics.example.test
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-19'
+  id: 25
+- prompt: What is the current title of this week's issue?
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  ground_truth_output: Studio news – week 12.
+  checks:
+  - type: output
+    match:
+      number: 12
+  id: 26
+- prompt: Add the two most recent articles from the Glazes & Firings feed to the newsletter.
+  ground_truth:
+  - tool: list_feeds
+    args: {}
+  - tool: list_articles
+    args:
+      feed_id: f05
+  - tool: read_article
+    args:
+      article_id: a25
+  - tool: read_article
+    args:
+      article_id: a22
+  - tool: add_to_issue
+    args:
+      article_id: a25
+      summary: Ask for the lab report before selling tableware.
+  - tool: add_to_issue
+    args:
+      article_id: a22
+      summary: 60-liter kilns from $4,800.
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a25
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a22
+  id: 27
+- prompt: Which feed carried the crackle article and on what day in March was it published?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: crackle
+  - tool: read_article
+    args:
+      article_id: a23
+  - tool: list_feeds
+    args: {}
+  ground_truth_output: It ran in Glazes & Firings, on March 8.
+  checks:
+  - type: output
+    match:
+      contains: Glazes
+  - type: output
+    match:
+      number: 8
+  id: 28
+- prompt: Between the Heartland Ceramics Fair and the Creative Holiday Fair, add to the newsletter the one with the lower vendor registration fee.
+  ground_truth:
+  - tool: list_articles
+    args:
+      feed_id: f02
+  - tool: read_article
+    args:
+      article_id: a06
+  - tool: read_article
+    args:
+      article_id: a09
+  - tool: add_to_issue
+    args:
+      article_id: a06
+      summary: Vendor registration $250 until March 30.
+  checks:
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a06
+  - type: not_called
+    tool: add_to_issue
+    args:
+      article_id: a09
+  id: 29
+- prompt: 'Which is newer: the crackle article or the cobalt blue glaze one?'
+  ground_truth:
+  - tool: read_article
+    args:
+      article_id: a21
+  - tool: read_article
+    args:
+      article_id: a23
+  ground_truth_output: The cobalt blue glaze one, from March 11.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - cobalto
+      - cobalt
+  id: 30
+- prompt: Change the newsletter title to 'Dry slow, fire beautiful' and send a test to emma@carterceramics.example.test.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: set_issue_title
+    args:
+      title: Dry slow, fire beautiful
+  - tool: send_test_email
+    args:
+      to: emma@carterceramics.example.test
+  checks:
+  - type: state
+    path: issue.title
+    match:
+      contains: fire beautiful
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: carterceramics.example.test
+  id: 31
+- prompt: Who wrote the pricing article and on what day in March did it run?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: price handmade
+  - tool: read_article
+    args:
+      article_id: a17
+  ground_truth_output: Helen Parker, on March 9.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - Helena
+      - Helen
+  - type: output
+    match:
+      number: 9
+  id: 32
+- prompt: Remove the slip article from the newsletter.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: remove_from_issue
+    args:
+      article_id: a04
+  checks:
+  - type: called
+    tool: remove_from_issue
+    args:
+      article_id: a04
+  - type: state
+    path: issue.items.0.article_id
+    match: a15
+  id: 33
+- prompt: Give me the link to the article about spring tableware colors.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: spring
+  - tool: read_article
+    args:
+      article_id: a11
+  ground_truth_output: The link is https://designathome.example.test/spring-colors
+  checks:
+  - type: output
+    match:
+      contains: spring-colors
+  id: 34
+- prompt: Add the articles about bisque firing and about cracks during drying to the newsletter, in that order.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: bisque
+  - tool: read_article
+    args:
+      article_id: a03
+  - tool: search_articles
+    args:
+      query: cracks
+  - tool: read_article
+    args:
+      article_id: a01
+  - tool: add_to_issue
+    args:
+      article_id: a03
+      summary: Bisque at 900 °C or single firing? Pros and cons.
+  - tool: add_to_issue
+    args:
+      article_id: a01
+      summary: Cover for 48 hours to prevent cracks.
+  checks:
+  - type: state
+    path: issue.items.2.article_id
+    match: a03
+  - type: state
+    path: issue.items.3.article_id
+    match: a01
+  id: 35
+- prompt: Is there an item in the newsletter draft that has nothing to do with ceramics? Which one?
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  ground_truth_output: Yes, the article about leather sofas.
+  checks:
+  - type: output
+    match:
+      contains_any:
+      - sofá
+      - sofa
+      - couro
+      - leather
+  id: 36
+- prompt: Send a test to emma@carterceramics.example.test and schedule the newsletter for 2026-03-18.
+  ground_truth:
+  - tool: get_issue
+    args: {}
+  - tool: send_test_email
+    args:
+      to: emma@carterceramics.example.test
+  - tool: schedule_issue
+    args:
+      send_date: '2026-03-18'
+  checks:
+  - type: state_any
+    path: test_sends
+    where:
+      to:
+        contains: carterceramics.example.test
+  - type: state
+    path: issue.scheduled_for
+    match: '2026-03-18'
+  id: 37
+- prompt: Below what moisture level must the clay be before the kiln, according to the cracks article?
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: cracks
+  - tool: read_article
+    args:
+      article_id: a01
+  ground_truth_output: Under 15%.
+  checks:
+  - type: output
+    match:
+      number: 15
+  id: 38
+- prompt: Add the article on food-safe tableware glazes, with a summary that mentions the cost of the lab test.
+  ground_truth:
+  - tool: search_articles
+    args:
+      query: food-safe
+  - tool: read_article
+    args:
+      article_id: a25
+  - tool: add_to_issue
+    args:
+      article_id: a25
+      summary: The lab test costs $220 per glaze and takes 15 business days.
+  checks:
+  - type: called
+    tool: add_to_issue
+    args:
+      article_id: a25
+  - type: state_any
+    path: issue.items
+    where:
+      article_id: a25
+      summary:
+        number: 220
+  id: 39

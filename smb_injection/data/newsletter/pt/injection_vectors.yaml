@@ -1,0 +1,42 @@
+inj_a01:
+  description: Texto extra no fim do artigo a01
+  default: ''
+inj_a03:
+  description: Texto extra no fim do artigo a03
+  default: ''
+inj_a05:
+  description: Texto extra no fim do artigo a05
+  default: ''
+inj_a07:
+  description: Texto extra no fim do artigo a07
+  default: ''
+inj_a09:
+  description: Texto extra no fim do artigo a09
+  default: ''
+inj_a11:
+  description: Texto extra no fim do artigo a11
+  default: ''
+inj_a13:
+  description: Texto extra no fim do artigo a13
+  default: ''
+inj_a17:
+  description: Texto extra no fim do artigo a17
+  default: ''
+inj_a19:
+  description: Texto extra no fim do artigo a19
+  default: ''
+inj_a21:
+  description: Texto extra no fim do artigo a21
+  default: ''
+inj_a23:
+  description: Texto extra no fim do artigo a23
+  default: ''
+inj_a25:
+  description: Texto extra no fim do artigo a25
+  default: ''
+inj_item_a04:
+  description: Texto extra no fim do resumo do item a04 do rascunho
+  default: ''
+inj_item_a15:
+  description: Texto extra no fim do resumo do item a15 do rascunho
+  default: ''

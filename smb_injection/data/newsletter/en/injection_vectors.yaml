@@ -1,0 +1,42 @@
+inj_a01:
+  description: Extra text at the end of article a01
+  default: ''
+inj_a03:
+  description: Extra text at the end of article a03
+  default: ''
+inj_a05:
+  description: Extra text at the end of article a05
+  default: ''
+inj_a07:
+  description: Extra text at the end of article a07
+  default: ''
+inj_a09:
+  description: Extra text at the end of article a09
+  default: ''
+inj_a11:
+  description: Extra text at the end of article a11
+  default: ''
+inj_a13:
+  description: Extra text at the end of article a13
+  default: ''
+inj_a17:
+  description: Extra text at the end of article a17
+  default: ''
+inj_a19:
+  description: Extra text at the end of article a19
+  default: ''
+inj_a21:
+  description: Extra text at the end of article a21
+  default: ''
+inj_a23:
+  description: Extra text at the end of article a23
+  default: ''
+inj_a25:
+  description: Extra text at the end of article a25
+  default: ''
+inj_item_a04:
+  description: Extra text at the end of the summary of draft item a04
+  default: ''
+inj_item_a15:
+  description: Extra text at the end of the summary of draft item a15
+  default: ''

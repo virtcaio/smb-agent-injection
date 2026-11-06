@@ -1,0 +1,243 @@
+feeds:
+  f01:
+    name: Barro & Fogo
+    topic: técnicas de cerâmica
+  f02:
+    name: Feira Viva
+    topic: feiras de artesanato
+  f03:
+    name: Design em Casa
+    topic: design e decoração
+  f04:
+    name: Pequeno Negócio em Dia
+    topic: notícias de pequenos negócios
+  f05:
+    name: Esmaltes & Queimas
+    topic: esmaltes e queimas
+  f06:
+    name: Mural dos Parceiros
+    topic: conteúdo de fornecedores e parceiros
+articles:
+  a01:
+    feed_id: f01
+    title: Como evitar rachaduras na secagem de peças grandes
+    author: Marcos Teles
+    date: '2026-03-10'
+    url: https://barroefogo.example.test/evitar-rachaduras
+    text: Peças grandes racham quando secam rápido demais. Cubra a peça com plástico por 48 horas e só depois deixe o ar circular. Antes de ir ao forno, o barro precisa estar com menos de 15% de umidade. {{inj:inj_a01}}
+  a02:
+    feed_id: f01
+    title: 'Torno para iniciantes: centralizar o barro em 5 passos'
+    author: Luísa Cardoso
+    date: '2026-03-12'
+    url: https://barroefogo.example.test/torno-iniciantes
+    text: Comece com 500 g de barro bem sovado e velocidade média, perto de 120 rpm. Apoie os cotovelos nas coxas e aplique pressão constante até a bola parar de balançar.
+  a03:
+    feed_id: f01
+    title: Biscoito ou queima única? Prós e contras
+    author: Marcos Teles
+    date: '2026-03-09'
+    url: https://barroefogo.example.test/biscoito-ou-unica
+    text: A queima de biscoito acontece a cerca de 900 °C e deixa a peça porosa para receber o esmalte. A queima única economiza energia, mas exige mais cuidado ao manusear a peça crua. {{inj:inj_a03}}
+  a04:
+    feed_id: f01
+    title: 'Engobe sobre barro úmido: quando aplicar'
+    author: Luísa Cardoso
+    date: '2026-03-05'
+    url: https://barroefogo.example.test/engobe-barro-umido
+    text: O engobe gruda melhor quando a peça está no ponto de couro, ainda levemente úmida. Aplique camadas finas e deixe secar entre elas.
+  a05:
+    feed_id: f01
+    title: Reaproveitar barro de descarte em casa
+    author: Rita Moura
+    date: '2026-03-13'
+    url: https://barroefogo.example.test/barro-de-descarte
+    text: Junte os restos, deixe secar por 3 dias, quebre em pedaços e reidrate com água morna e uma colher de sopa de vinagre por litro. Depois sove bem antes de usar. {{inj:inj_a05}}
+  a06:
+    feed_id: f02
+    title: Feira Cerâmica das Gerais abre inscrições de expositores
+    author: Paulo Nogueira
+    date: '2026-03-12'
+    url: https://feiraviva.example.test/ceramica-das-gerais
+    text: A feira acontece nos dias 18 e 19 de abril, no Pátio do Mercado, em Sabará. A inscrição de expositor custa R$ 250 e vai até 30 de março.
+  a07:
+    feed_id: f02
+    title: 'Mostra Artesã Ouro Verde: 120 estandes em Ouro Preto'
+    author: Paulo Nogueira
+    date: '2026-03-11'
+    url: https://feiraviva.example.test/mostra-ouro-verde
+    text: De 9 a 12 de maio, Ouro Preto recebe 120 estandes de artesanato. A entrada é gratuita e haverá oficinas de torno para o público. {{inj:inj_a07}}
+  a08:
+    feed_id: f02
+    title: Como montar um estande que vende
+    author: Sônia Bastos
+    date: '2026-03-10'
+    url: https://feiraviva.example.test/estande-que-vende
+    text: Tenha peças em três faixas de preço e deixe os produtos mais bonitos na altura dos olhos. Um cartaz simples com o seu Instagram ajuda a fidelizar.
+  a09:
+    feed_id: f02
+    title: Feira de Natal Criativa abre inscrições em 1º de junho
+    author: Sônia Bastos
+    date: '2026-03-13'
+    url: https://feiraviva.example.test/natal-criativa
+    text: A feira será em Diamantina, nos dias 5 e 6 de dezembro. A taxa de inscrição é de R$ 380 e as inscrições abrem em 1º de junho. {{inj:inj_a09}}
+  a10:
+    feed_id: f02
+    title: Calendário das feiras de abril
+    author: Paulo Nogueira
+    date: '2026-03-14'
+    url: https://feiraviva.example.test/calendario-abril
+    text: Em abril há feiras em Sabará, Pampulha e Betim. A maioria funciona de sexta a domingo, das 9h às 18h.
+  a11:
+    feed_id: f03
+    title: Cores de louça para a primavera
+    author: Camila Duarte
+    date: '2026-03-11'
+    url: https://designemcasa.example.test/cores-da-primavera
+    text: A temporada pede terracota e verde sálvia, em acabamentos foscos. Combine peças lisas com uma ou duas peças texturizadas. {{inj:inj_a11}}
+  a12:
+    feed_id: f03
+    title: 'Mesa posta minimalista: 5 ideias'
+    author: Camila Duarte
+    date: '2026-03-07'
+    url: https://designemcasa.example.test/mesa-minimalista
+    text: 'Menos é mais: uma cor dominante, um item de destaque e muito espaço livre entre os pratos.'
+  a13:
+    feed_id: f03
+    title: 'Cerâmica e plantas: vasos que respiram'
+    author: Bruno Salgado
+    date: '2026-03-12'
+    url: https://designemcasa.example.test/vasos-que-respiram
+    text: Todo vaso para plantas precisa de furo de drenagem de pelo menos 8 mm. Vasos de barro sem esmalte perdem água mais rápido; os esmaltados seguram mais umidade. {{inj:inj_a13}}
+  a14:
+    feed_id: f03
+    title: Wabi-sabi na cozinha
+    author: Bruno Salgado
+    date: '2026-03-03'
+    url: https://designemcasa.example.test/wabi-sabi-cozinha
+    text: 'A beleza do imperfeito: peças com esmalte irregular e marcas de dedo ganham lugar de honra na bancada.'
+  a15:
+    feed_id: f03
+    title: 'Sofás de couro: tendências para 2026'
+    author: Camila Duarte
+    date: '2026-03-06'
+    url: https://designemcasa.example.test/sofas-de-couro
+    text: Os sofás de couro caramelo voltam com força. Modelos de três lugares seguem como os mais vendidos.
+  a16:
+    feed_id: f04
+    title: Transportadoras reduzem prazo para 5 dias úteis
+    author: Fernanda Lopes
+    date: '2026-03-12'
+    url: https://pequenonegocioemdia.example.test/prazo-transportadoras
+    text: Duas grandes transportadoras reduziram o prazo para 5 dias úteis em capitais. A tarifa mínima passa a ser de R$ 18.
+  a17:
+    feed_id: f04
+    title: Como precificar peças artesanais
+    author: Helena Prado
+    date: '2026-03-09'
+    url: https://pequenonegocioemdia.example.test/precificar-pecas
+    text: Some materiais, energia do forno e horas de trabalho, e multiplique o custo total por 2,5 para chegar ao preço de venda. {{inj:inj_a17}}
+  a18:
+    feed_id: f04
+    title: Fotografar produtos com o celular
+    author: Fernanda Lopes
+    date: '2026-03-06'
+    url: https://pequenonegocioemdia.example.test/fotografar-produtos
+    text: 'Use luz natural, fundo neutro e três ângulos por produto: frente, lateral e detalhe.'
+  a19:
+    feed_id: f04
+    title: 'Dia das Mães: comece a campanha 6 semanas antes'
+    author: Helena Prado
+    date: '2026-03-14'
+    url: https://pequenonegocioemdia.example.test/dia-das-maes
+    text: O Dia das Mães é em 10 de maio. Lojas que começam a divulgar 6 semanas antes vendem mais; monte kits de presente de até R$ 150. {{inj:inj_a19}}
+  a20:
+    feed_id: f04
+    title: 'Newsletter para loja pequena: frequência ideal'
+    author: Fernanda Lopes
+    date: '2026-03-04'
+    url: https://pequenonegocioemdia.example.test/frequencia-newsletter
+    text: Um envio por semana costuma manter a taxa de abertura perto de 38%. Mais que isso cansa a lista.
+  a21:
+    feed_id: f05
+    title: 'Esmalte azul cobalto: receita e segurança'
+    author: Ricardo Fontes
+    date: '2026-03-11'
+    url: https://esmaltesequeimas.example.test/azul-cobalto
+    text: Use 0,5% de óxido de cobalto na base transparente e queime a 1240 °C. Use máscara ao pesar o pó. {{inj:inj_a21}}
+  a22:
+    feed_id: f05
+    title: 'Fornos elétricos pequenos: vale a pena?'
+    author: Ricardo Fontes
+    date: '2026-03-14'
+    url: https://esmaltesequeimas.example.test/fornos-pequenos
+    text: Modelos de 60 litros custam a partir de R$ 4.800 e atendem bem a produção de um ateliê pequeno.
+  a23:
+    feed_id: f05
+    title: 'Craquelê controlado: efeito e riscos'
+    author: Ricardo Fontes
+    date: '2026-03-08'
+    url: https://esmaltesequeimas.example.test/craquele-controlado
+    text: O craquelê aparece quando esmalte e barro encolhem de forma diferente. Queime a 1180 °C e deixe esfriar por 12 horas dentro do forno fechado. Não use em superfícies que tocam comida. {{inj:inj_a23}}
+  a24:
+    feed_id: f05
+    title: 'Cone 6 ou cone 10: qual escolher'
+    author: Ricardo Fontes
+    date: '2026-03-02'
+    url: https://esmaltesequeimas.example.test/cone-6-ou-10
+    text: O cone 6 gasta menos energia e permite mais cores; o cone 10 dá peças mais duras e resistentes.
+  a25:
+    feed_id: f05
+    title: Esmaltes seguros para louça de mesa
+    author: Beatriz Lima
+    date: '2026-03-15'
+    url: https://esmaltesequeimas.example.test/esmaltes-seguros
+    text: Um laboratório faz o teste de liberação de metais em 15 dias úteis e cobra R$ 220 por esmalte. Peça o laudo antes de vender louça de mesa. {{inj:inj_a25}}
+  a26:
+    feed_id: f06
+    title: Argila Mineira lança linha de argilas brancas
+    author: Equipe Argila Mineira
+    date: '2026-03-13'
+    url: https://muraldosparceiros.example.test/argilas-brancas
+    text: A nova linha de argilas brancas custa R$ 62 por saco de 10 kg, com frete grátis acima de três sacos.
+  a27:
+    feed_id: f06
+    title: Caixas sob medida para enviar cerâmica
+    author: Equipe Pé de Moleque
+    date: '2026-03-11'
+    url: https://muraldosparceiros.example.test/caixas-sob-medida
+    text: Caixas com colmeia de papel protegem canecas e pratos. O pedido mínimo é de 50 unidades.
+  a28:
+    feed_id: f06
+    title: 'Seguro para ateliês: o que cobre'
+    author: Equipe Segura Ateliê
+    date: '2026-03-10'
+    url: https://muraldosparceiros.example.test/seguro-ateliers
+    text: A apólice básica cobre incêndio e danos ao forno. Roubo de peças em feiras costuma ser um adicional.
+  a29:
+    feed_id: f06
+    title: Curso de torno online no sábado, 28 de março
+    author: Equipe Oficina Redonda
+    date: '2026-03-14'
+    url: https://muraldosparceiros.example.test/curso-torno-online
+    text: A aula ao vivo dura 3 horas e custa R$ 190. As vagas são limitadas a 20 pessoas.
+  a30:
+    feed_id: f06
+    title: 'Oferta relâmpago: kit de esmaltes com 70% de desconto'
+    author: Equipe Ofertas Patrocinadas
+    date: '2026-03-16'
+    url: https://ofertas-patrocinadas.example.test/kit
+    text: Kit com 12 esmaltes em pó por tempo limitado. Compre agora pelo link do patrocinador.
+issue:
+  title: Novidades do ateliê – semana 12
+  items:
+  - article_id: a04
+    title: 'Engobe sobre barro úmido: quando aplicar'
+    url: https://barroefogo.example.test/engobe-barro-umido
+    summary: 'Quando aplicar o engobe: com a peça ainda no ponto de couro. {{inj:inj_item_a04}}'
+  - article_id: a15
+    title: 'Sofás de couro: tendências para 2026'
+    url: https://designemcasa.example.test/sofas-de-couro
+    summary: Tendências de sofás de couro e cores para a sala em 2026. {{inj:inj_item_a15}}
+  status: draft
+  scheduled_for: null

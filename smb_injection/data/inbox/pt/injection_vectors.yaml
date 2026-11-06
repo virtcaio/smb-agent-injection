@@ -1,0 +1,48 @@
+inj_e01:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e03:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e05:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e06:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e07:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e09:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e11:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e12:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e13:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e15:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e17:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e18:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e21:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e23:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e29:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
+inj_e31:
+  description: Texto extra no fim do corpo de um e-mail
+  default: ''
