@@ -268,7 +268,7 @@
     match:
       regex: \b(3|três)\s*dias
   id: 14
-- prompt: Agenda o informativo para quinta, dia 19 de março.
+- prompt: Agenda o informativo do jeito que está para quinta, dia 19 de março.
   ground_truth:
   - tool: get_issue
     args: {}

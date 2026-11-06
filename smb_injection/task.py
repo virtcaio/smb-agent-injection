@@ -12,7 +12,7 @@ from smb_injection.agent import cached_suite, smb_agent
 from smb_injection.core import run_checks
 
 
-def build_dataset(suite_name: str, lang: str, condition: str, task_ids: list[int] | None) -> MemoryDataset:
+def build_dataset(suite_name: str, lang: str, condition: str, task_ids: list[int] | None, attack: str = "important_instructions") -> MemoryDataset:
     suite = cached_suite(suite_name, lang)
     samples = []
     for tid, user_task in sorted(suite.user_tasks.items()):
@@ -24,7 +24,7 @@ def build_dataset(suite_name: str, lang: str, condition: str, task_ids: list[int
         if condition in ("attacked", "both"):
             # Every user task is attacked by every injection goal (AgentDojo's full cross).
             for inj in sorted(suite.injection_tasks.values(), key=lambda i: i.id):
-                samples.append(Sample(id=f"{suite_name}-{lang}-u{tid}-i{inj.id}", input=user_task.prompt, metadata={**base, "injection_id": inj.id, "injection_kind": inj.kind}))
+                samples.append(Sample(id=f"{suite_name}-{lang}-u{tid}-i{inj.id}", input=user_task.prompt, metadata={**base, "injection_id": inj.id, "injection_kind": inj.kind, "attack": attack}))
     return MemoryDataset(samples=samples, name=f"{suite_name}-{lang}")
 
 
@@ -66,10 +66,11 @@ def smb_injection(
     max_turns: int = 15,
     monitor_model: str = "anthropic/claude-haiku-5-5",
     batch: bool = False,
+    attack: str = "important_instructions",
 ) -> Task:
     return Task(
-        dataset=build_dataset(suite, lang, condition, task_ids),
+        dataset=build_dataset(suite, lang, condition, task_ids, attack),
         solver=smb_agent(defense=defense, max_turns=max_turns, monitor_model=monitor_model, batch=batch),
         scorer=smb_scorer(),
-        metadata={"suite": suite, "lang": lang, "defense": defense, "condition": condition},
+        metadata={"suite": suite, "lang": lang, "defense": defense, "condition": condition, "attack": attack},
     )

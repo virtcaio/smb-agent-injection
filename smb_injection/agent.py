@@ -141,7 +141,7 @@ def smb_agent(defense: str = "none", max_turns: int = 15, monitor_model: str = "
         task = suite.user_tasks[meta["task_id"]]
         injection = None
         if meta.get("injection_id") is not None:
-            injection = attack_text(suite, suite.injection_tasks[meta["injection_id"]])
+            injection = attack_text(suite, suite.injection_tasks[meta["injection_id"]], meta.get("attack", "important_instructions"))
         store().set("env", suite.build_env(injection=injection))
         store().set("executed", [])
         store().set("events", [])

@@ -21,6 +21,11 @@ from smb_injection.suites import SUITES
 from smb_injection.task import smb_injection
 
 MODELS = ["anthropic/claude-haiku-5-5", "anthropic/claude-sonnet-5-5", "anthropic/claude-opus-5-5"]
+PREVIOUS = ["anthropic/claude-haiku-4-5", "anthropic/claude-sonnet-4-6"]
+
+# Effort "medium" everywhere it exists. Claude Haiku 4.5 has no effort parameter (it errors), so it
+# runs with its default: no extended thinking.
+EFFORT: dict[str, str | None] = {"anthropic/claude-haiku-4-5": None}
 
 
 def parse_ids(spec: str | None) -> list[int] | None:
@@ -45,31 +50,37 @@ def main() -> None:
     ap.add_argument("--models", default=",".join(MODELS))
     ap.add_argument("--tasks", default=None, help="user task ids, e.g. 0-5 or 0,3,7")
     ap.add_argument("--condition", default="both", choices=["both", "benign", "attacked"])
+    ap.add_argument("--attacks", default="important_instructions", help="comma-separated attack templates")
     ap.add_argument("--batch", action="store_true", help="use the Message Batches API (50%% cheaper, slower)")
     ap.add_argument("--max-connections", type=int, default=8)
     ap.add_argument("--limit", type=int, default=None)
     args = ap.parse_args()
 
     tasks = [
-        smb_injection(suite=s, lang=lang, defense=d, condition=args.condition, task_ids=parse_ids(args.tasks), batch=args.batch)
+        smb_injection(suite=s, lang=lang, defense=d, condition=args.condition, task_ids=parse_ids(args.tasks), batch=args.batch, attack=a)
+        for a in args.attacks.split(",")
         for s in args.suites.split(",")
         for lang in args.langs.split(",")
         for d in args.defenses.split(",")
     ]
-    log_dir = Path("logs") / args.stage
-    ok, _ = eval_set(
-        tasks,
-        model=args.models.split(","),
-        log_dir=str(log_dir),
-        effort="medium",
-        batch=args.batch or None,
-        max_connections=args.max_connections,
-        retry_attempts=3,
-        limit=args.limit,
-        fail_on_error=0.05,
-        display="plain",
-    )
-    print("all tasks complete" if ok else "some tasks did not complete; re-run the same command to resume")
+    all_ok = True
+    for model in args.models.split(","):
+        # One log directory per model, so each model can use its own generation settings.
+        log_dir = Path("logs") / args.stage / model.split("/")[-1]
+        ok, _ = eval_set(
+            tasks,
+            model=model,
+            log_dir=str(log_dir),
+            effort=EFFORT.get(model, "medium"),
+            batch=args.batch or None,
+            max_connections=args.max_connections,
+            retry_attempts=3,
+            limit=args.limit,
+            fail_on_error=0.05,
+            display="plain",
+        )
+        all_ok &= ok
+    print("all tasks complete" if all_ok else "some tasks did not complete; re-run the same command to resume")
 
 
 if __name__ == "__main__":

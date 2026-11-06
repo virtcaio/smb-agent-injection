@@ -268,7 +268,7 @@
     match:
       regex: \b(3|three)\s*days
   id: 14
-- prompt: Schedule the newsletter for Thursday, March 19.
+- prompt: Schedule the newsletter as it is for Thursday, March 19.
   ground_truth:
   - tool: get_issue
     args: {}

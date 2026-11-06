@@ -16,6 +16,8 @@ from inspect_ai.log import list_eval_logs, read_eval_log
 
 # US$ per million tokens: input, output, cache read, cache write (5 min). Batch halves all four.
 PRICES = {
+    "claude-haiku-4-5": (1.00, 5.00, 0.10, 1.25),
+    "claude-sonnet-4-6": (3.00, 15.00, 0.30, 3.75),
     "claude-haiku-5-5": (0.10, 0.50, 0.01, 0.125),
     "claude-sonnet-5-5": (2.00, 10.00, 0.20, 2.50),
     "claude-opus-5-5": (4.00, 20.00, 0.20, 5.00),
@@ -48,7 +50,7 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
 
 def episodes(log_dir: str) -> pd.DataFrame:
     rows = []
-    for info in list_eval_logs(log_dir):
+    for info in list_eval_logs(log_dir, recursive=True):
         log = read_eval_log(info)
         if log.status != "success" or not log.samples:
             continue
@@ -70,6 +72,7 @@ def episodes(log_dir: str) -> pd.DataFrame:
                 "suite": s.metadata["suite"],
                 "lang": s.metadata["lang"],
                 "defense": meta.get("defense"),
+                "attack": meta.get("attack", "important_instructions"),
                 "task_id": s.metadata["task_id"],
                 "attacked": bool(m.get("attacked")),
                 "injection_kind": s.metadata.get("injection_kind"),
@@ -92,14 +95,14 @@ def episodes(log_dir: str) -> pd.DataFrame:
 
 def summary(df: pd.DataFrame) -> pd.DataFrame:
     out = []
-    for (model, defense), g in df.groupby(["model", "defense"]):
+    for (model, attack, defense), g in df.groupby(["model", "attack", "defense"]):
         benign, attacked = g[~g.attacked], g[g.attacked]
         k_asr, n_asr = int(attacked.attack_success.sum()), len(attacked)
         k_ub, n_ub = int(benign.utility.sum()), len(benign)
         k_ua, n_ua = int(attacked.utility.sum()), len(attacked)
         fp = int(((benign.lock_blocks + benign.monitor_blocks + benign.armor_blocks) > 0).sum())
         out.append({
-            "model": model, "defense": defense,
+            "model": model, "attack": attack, "defense": defense,
             "attack_success": k_asr / n_asr if n_asr else float("nan"), "asr_ci": wilson(k_asr, n_asr),
             "utility_benign": k_ub / n_ub if n_ub else float("nan"), "ub_ci": wilson(k_ub, n_ub),
             "utility_attacked": k_ua / n_ua if n_ua else float("nan"), "ua_ci": wilson(k_ua, n_ua),
@@ -130,7 +133,7 @@ def main() -> None:
     c["total_cost"] = df.groupby("model")[["cost_agent", "cost_monitor"]].sum().sum(axis=1)
     c.to_csv(out / "cost.csv")
     pd.set_option("display.width", 200)
-    print(s[["model", "defense", "attack_success", "utility_benign", "utility_attacked", "benign_with_defense_block", "refusals", "cost_per_episode", "n_attacked"]].round(3).to_string(index=False))
+    print(s[["model", "attack", "defense", "attack_success", "utility_benign", "utility_attacked", "benign_with_defense_block", "refusals", "cost_per_episode", "n_attacked"]].round(3).to_string(index=False))
     print()
     print(c.round(4).to_string())
     print(f"\ntotal cost: US$ {c.total_cost.sum():.2f}")

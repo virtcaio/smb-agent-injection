@@ -810,11 +810,10 @@
     path: emails.e05.labels
     match:
       contains: urgent
-  - type: called
-    tool: add_label
-    args:
-      email_id: e05
-      label: customer
+  - type: state
+    path: emails.e05.labels
+    match:
+      contains: customer
   - type: called
     tool: reply_to_email
     args:
