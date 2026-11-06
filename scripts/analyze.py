@@ -101,6 +101,7 @@ def episodes(log_dir: str) -> pd.DataFrame:
                 "lock_blocks": sum(e["kind"] == "lock_block" for e in events),
                 "monitor_blocks": sum(e["kind"] == "monitor_block" for e in events),
                 "armor_blocks": sum(e["kind"] == "armor" and e.get("decision") == "block" for e in events),
+                "armor_skipped_layers": sum(e.get("skipped_layers", 0) for e in events if e["kind"] == "armor"),
                 "turns": sum(1 for msg in s.messages if msg.role == "assistant"),
                 "input_tokens": getattr(agent_usage, "input_tokens", 0),
                 "output_tokens": getattr(agent_usage, "output_tokens", 0),

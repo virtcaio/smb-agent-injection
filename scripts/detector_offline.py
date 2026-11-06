@@ -17,7 +17,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd  # noqa: E402
-from prompt_armor import analyze  # noqa: E402
+from smb_injection.agent import _armor  # noqa: E402
 
 from smb_injection.attacks import attack_text  # noqa: E402
 from smb_injection.core import LANGS, execute_locally, load_suite  # noqa: E402
@@ -38,14 +38,16 @@ def main() -> None:
     import importlib.metadata as md
 
     version = md.version("prompt-armor")
+    analyze, counter = _armor()
     rows = []
     for name in SUITES:
         for lang in LANGS:
             suite = load_suite(name, lang)
             for tid, task in suite.user_tasks.items():
                 for out in asyncio.run(trajectory_outputs(suite, task, None)):
+                    before = counter.count
                     r = analyze(out)
-                    rows.append({"suite": name, "lang": lang, "task_id": tid, "attack": None, "injection_id": None, "carries_attack": False, "decision": r.decision.value, "risk": r.risk_score})
+                    rows.append({"suite": name, "lang": lang, "task_id": tid, "attack": None, "injection_id": None, "carries_attack": False, "decision": r.decision.value, "risk": r.risk_score, "skipped_layers": counter.count - before})
                 for attack in args.attacks.split(","):
                     for inj in suite.injection_tasks.values():
                         text = attack_text(suite, inj, attack)
@@ -53,8 +55,9 @@ def main() -> None:
                             carries = text.strip()[:40] in out or inj.goal[:40] in out
                             if not carries:
                                 continue
+                            before = counter.count
                             r = analyze(out)
-                            rows.append({"suite": name, "lang": lang, "task_id": tid, "attack": attack, "injection_id": inj.id, "carries_attack": True, "decision": r.decision.value, "risk": r.risk_score})
+                            rows.append({"suite": name, "lang": lang, "task_id": tid, "attack": attack, "injection_id": inj.id, "carries_attack": True, "decision": r.decision.value, "risk": r.risk_score, "skipped_layers": counter.count - before})
             print(f"{name}/{lang} done", flush=True)
     df = pd.DataFrame(rows)
     out = Path(args.out)
@@ -63,7 +66,7 @@ def main() -> None:
     df["blocked"] = df.decision == "block"
     benign = df[~df.carries_attack]
     attacked = df[df.carries_attack]
-    print(f"\nprompt-armor {version}")
+    print(f"\nprompt-armor {version}; skipped layers in {int((df.skipped_layers > 0).sum())} of {len(df)} calls")
     print("\nTool results WITHOUT attack blocked (false positives), by language:")
     print(benign.groupby(["lang"]).blocked.agg(["mean", "sum", "count"]).round(3).to_string())
     print(benign.groupby(["suite", "lang"]).blocked.mean().unstack().round(3).to_string())

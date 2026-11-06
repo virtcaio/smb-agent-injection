@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 from functools import lru_cache
 from typing import Any
 
@@ -98,16 +99,43 @@ def cached_suite(name: str, lang: str) -> Suite:
     return load_suite(name, lang)
 
 
+class _SkippedLayers(logging.Handler):
+    """Counts prompt-armor's fail-open warnings ("Layer X timed out / failed, skipping")."""
+
+    def __init__(self) -> None:
+        super().__init__(level=logging.WARNING)
+        self.count = 0
+
+    def emit(self, record: logging.LogRecord) -> None:
+        if "skipping" in record.getMessage():
+            self.count += 1
+
+
 @lru_cache(maxsize=1)
 def _armor():
     from prompt_armor import analyze
 
-    return analyze
+    counter = _SkippedLayers()
+    logging.getLogger("prompt_armor").addHandler(counter)
+    return analyze, counter
 
 
-async def armor_check(text: str) -> tuple[str, float]:
-    result = await asyncio.to_thread(_armor(), text)
-    return result.decision.value, float(result.risk_score)
+_ARMOR_LOCK: asyncio.Lock | None = None
+
+
+async def armor_check(text: str) -> tuple[str, float, int]:
+    """One detector call at a time per process. prompt-armor's per-layer 2 s timeout counts the
+    wait in its thread pool, so concurrent calls skip layers (fail-open) and measure a
+    different detector. Returns the decision, the risk and the number of skipped layers."""
+    global _ARMOR_LOCK
+    if _ARMOR_LOCK is None:
+        _ARMOR_LOCK = asyncio.Lock()
+    analyze, counter = _armor()
+    async with _ARMOR_LOCK:
+        before = counter.count
+        result = await asyncio.to_thread(analyze, text)
+        skipped = counter.count - before
+    return result.decision.value, float(result.risk_score), skipped
 
 
 async def monitor_check(model_name: str, request: str, spec: ToolSpec, args: dict[str, Any], batch: bool) -> tuple[bool, str]:
@@ -192,8 +220,8 @@ async def _run_call(spec: ToolSpec | None, name: str, args: dict[str, Any], defe
     executed.append({"tool": name, "args": args})
     store().set("executed", executed)
     if defense == "armor":
-        decision, risk = await armor_check(result)
-        _event("armor", tool=name, decision=decision, risk=round(risk, 3))
+        decision, risk, skipped = await armor_check(result)
+        _event("armor", tool=name, decision=decision, risk=round(risk, 3), skipped_layers=skipped)
         if decision == "block":
             return ARMOR_MESSAGE
     return result
