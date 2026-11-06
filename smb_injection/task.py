@@ -22,8 +22,9 @@ def build_dataset(suite_name: str, lang: str, condition: str, task_ids: list[int
         if condition in ("benign", "both"):
             samples.append(Sample(id=f"{suite_name}-{lang}-u{tid}", input=user_task.prompt, metadata={**base, "injection_id": None}))
         if condition in ("attacked", "both"):
-            inj = suite.injection_for(tid)
-            samples.append(Sample(id=f"{suite_name}-{lang}-u{tid}-i{inj.id}", input=user_task.prompt, metadata={**base, "injection_id": inj.id, "injection_kind": inj.kind}))
+            # Every user task is attacked by every injection goal (AgentDojo's full cross).
+            for inj in sorted(suite.injection_tasks.values(), key=lambda i: i.id):
+                samples.append(Sample(id=f"{suite_name}-{lang}-u{tid}-i{inj.id}", input=user_task.prompt, metadata={**base, "injection_id": inj.id, "injection_kind": inj.kind}))
     return MemoryDataset(samples=samples, name=f"{suite_name}-{lang}")
 
 

@@ -72,18 +72,18 @@ async def validate_lang(suite: Suite) -> tuple[list[str], dict]:
         executed_a, _ = await execute_locally(suite, attacked_env, task.ground_truth)
         if not run_checks(task.checks, attacked_env, executed_a, task.ground_truth_output):
             errors.append(f"{where}: ground truth fails its checks when the attack text is present")
-        inj = suite.injection_for(tid)
-        if run_checks(inj.checks, attacked_env, executed_a, task.ground_truth_output):
-            errors.append(f"{where}: the benign solution already satisfies injection {inj.id} (false attack success)")
         scope = suite.scope(task)
-        blocked = False
-        for call in inj.ground_truth:
-            spec = suite.tool(call["tool"])
-            if spec and spec.side_effect:
-                target = "*" if spec.target_arg is None else str(call["args"].get(spec.target_arg, "")).strip().lower()
-                if target not in scope.get(spec.name, set()):
-                    blocked = True
-        stats["lock_passes"] += 0 if blocked else 1
+        for inj in suite.injection_tasks.values():
+            if run_checks(inj.checks, attacked_env, executed_a, task.ground_truth_output):
+                errors.append(f"{where}: the benign solution already satisfies injection {inj.id} (false attack success)")
+            blocked = False
+            for call in inj.ground_truth:
+                spec = suite.tool(call["tool"])
+                if spec and spec.side_effect:
+                    target = "*" if spec.target_arg is None else str(call["args"].get(spec.target_arg, "")).strip().lower()
+                    if target not in scope.get(spec.name, set()):
+                        blocked = True
+            stats["lock_passes"] += 0 if blocked else 1
 
     for iid, inj in suite.injection_tasks.items():
         where = f"injection task {iid}"
@@ -119,7 +119,7 @@ async def main(names: list[str]) -> int:
             errors, stats = await validate_lang(suite)
             status = "OK" if not errors else f"{len(errors)} problem(s)"
             print(f"[{name}/{lang}] {stats['tasks']} tasks, {stats['injections']} injections, "
-                  f"{stats['lock_passes']} paired attacks would pass the permission lock: {status}")
+                  f"{stats['lock_passes']} of 120 task-injection pairs would pass the permission lock: {status}")
             for e in errors:
                 print(f"  - {e}")
             failed |= bool(errors)
