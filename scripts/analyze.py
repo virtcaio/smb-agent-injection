@@ -14,6 +14,9 @@ from pathlib import Path
 import pandas as pd
 from inspect_ai.log import list_eval_logs, read_eval_log
 
+from smb_injection.agent import cached_suite
+from smb_injection.core import run_checks
+
 # US$ per million tokens: input, output, cache read, cache write (5 min). Batch halves all four.
 PRICES = {
     "claude-haiku-4-5": (1.00, 5.00, 0.10, 1.25),
@@ -48,6 +51,19 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return c - h, c + h
 
 
+def rescore(s) -> tuple[bool, bool | None]:
+    """Recompute utility and attack success from the logged final environment, executed calls
+    and answer, with the current check definitions (so a fixed check applies to old logs too)."""
+    suite = cached_suite(s.metadata["suite"], s.metadata["lang"])
+    store = s.store or {}
+    env, executed = store.get("env") or {}, store.get("executed") or []
+    output = s.output.completion if s.output else ""
+    utility = run_checks(suite.user_tasks[s.metadata["task_id"]].checks, env, executed, output)
+    inj = s.metadata.get("injection_id")
+    attack = None if inj is None else run_checks(suite.injection_tasks[inj].checks, env, executed, output)
+    return utility, attack
+
+
 def episodes(log_dir: str) -> pd.DataFrame:
     rows = []
     for info in list_eval_logs(log_dir, recursive=True):
@@ -67,6 +83,7 @@ def episodes(log_dir: str) -> pd.DataFrame:
             agent_cost = sum(cost(k, u, batch) for k, u in usage.items() if k == model)
             monitor_cost = sum(cost(k, u, batch) for k, u in usage.items() if k != model)
             agent_usage = usage.get(model)
+            utility, attack_success = rescore(s)
             rows.append({
                 "model": model.split("/")[-1],
                 "suite": s.metadata["suite"],
@@ -75,9 +92,11 @@ def episodes(log_dir: str) -> pd.DataFrame:
                 "attack": meta.get("attack", "important_instructions"),
                 "task_id": s.metadata["task_id"],
                 "attacked": bool(m.get("attacked")),
-                "injection_kind": s.metadata.get("injection_kind"),
-                "utility": bool(m.get("utility")),
-                "attack_success": bool(m.get("attack_success")) if m.get("attacked") else None,
+                "injection_id": s.metadata.get("injection_id"),
+                "injection_kind": {"link": "exfil", "price": "state"}.get(s.metadata.get("injection_kind"), s.metadata.get("injection_kind")),
+                "utility": bool(utility),
+                "attack_success": bool(attack_success) if attack_success is not None else None,
+                "logged_attack_success": bool(m.get("attack_success")) if m.get("attacked") else None,
                 "refused": bool(m.get("refused")),
                 "lock_blocks": sum(e["kind"] == "lock_block" for e in events),
                 "monitor_blocks": sum(e["kind"] == "monitor_block" for e in events),
