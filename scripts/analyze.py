@@ -99,6 +99,8 @@ def episodes(log_dir: str) -> pd.DataFrame:
                 "logged_attack_success": bool(m.get("attack_success")) if m.get("attacked") else None,
                 "refused": bool(m.get("refused")),
                 "lock_blocks": sum(e["kind"] == "lock_block" for e in events),
+                "planlock_blocks": sum(e["kind"] == "planlock_block" for e in events),
+                "plan_error": any(e["kind"] == "plan" and e.get("error") for e in events),
                 "monitor_blocks": sum(e["kind"] == "monitor_block" for e in events),
                 "armor_blocks": sum(e["kind"] == "armor" and e.get("decision") == "block" for e in events),
                 "armor_skipped_layers": sum(e.get("skipped_layers", 0) for e in events if e["kind"] == "armor"),
@@ -120,7 +122,7 @@ def summary(df: pd.DataFrame) -> pd.DataFrame:
         k_asr, n_asr = int(attacked.attack_success.sum()), len(attacked)
         k_ub, n_ub = int(benign.utility.sum()), len(benign)
         k_ua, n_ua = int(attacked.utility.sum()), len(attacked)
-        fp = int(((benign.lock_blocks + benign.monitor_blocks + benign.armor_blocks) > 0).sum())
+        fp = int(((benign.lock_blocks + benign.planlock_blocks + benign.monitor_blocks + benign.armor_blocks) > 0).sum())
         out.append({
             "model": model, "attack": attack, "defense": defense,
             "attack_success": k_asr / n_asr if n_asr else float("nan"), "asr_ci": wilson(k_asr, n_asr),

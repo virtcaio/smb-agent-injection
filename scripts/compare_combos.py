@@ -2,7 +2,7 @@
 often a defense fires, attack success and utility under attack, by attack, language and injection
 kind, with 95% Wilson intervals.
 
-  uv run python scripts/compare_combos.py results [0.9.5]  # reads full-*, armor-<version>-* and combo-<version>-*
+  uv run python scripts/compare_combos.py results [0.9.5]  # reads full-*, armor-<version>-*, combo-<version>-* and planlock-*
 """
 
 import math
@@ -14,7 +14,7 @@ import pandas as pd
 root = Path(sys.argv[1])
 version = sys.argv[2] if len(sys.argv) > 2 else "0.9.5"
 MODEL = "claude-haiku-4-5"
-ORDER = ["none", "rule", "lock", "armor", "monitor", "rule+lock", "rule+armor"]
+ORDER = ["none", "rule", "lock", "planlock", "armor", "monitor", "rule+lock", "rule+planlock", "rule+armor"]
 
 
 def wilson(k, n, z=1.96):
@@ -25,12 +25,14 @@ def wilson(k, n, z=1.96):
     return f"{p:.3f} [{max(0, c - h):.3f}, {c + h:.3f}]"
 
 
-frames = [pd.read_csv(root / f"{stage}/episodes.csv") for stage in (
-    "full-benign", "full-attacked", f"armor-{version}-benign", f"armor-{version}-attacked",
-    f"combo-{version}-benign", f"combo-{version}-attacked")]
+stages = ["full-benign", "full-attacked", f"armor-{version}-benign", f"armor-{version}-attacked",
+          f"combo-{version}-benign", f"combo-{version}-attacked", "planlock-benign", "planlock-attacked"]
+frames = [pd.read_csv(root / f"{stage}/episodes.csv") for stage in stages if (root / stage).exists()]
 df = pd.concat(frames, ignore_index=True)
 df = df[df.model == MODEL]
-df["fired"] = (df.lock_blocks + df.monitor_blocks + df.armor_blocks) > 0
+for col in ("planlock_blocks", "plan_error"):
+    df[col] = df[col].fillna(0) if col in df else 0
+df["fired"] = (df.lock_blocks + df.planlock_blocks + df.monitor_blocks + df.armor_blocks) > 0
 df["defense"] = pd.Categorical(df.defense, ORDER, ordered=True)
 benign, attacked = df[~df.attacked], df[df.attacked]
 
