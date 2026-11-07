@@ -1,0 +1,3 @@
+model,attack,defense,attack_success,asr_ci,utility_benign,ub_ci,utility_attacked,ua_ci,benign_with_defense_block,fp_ci,refusals,cost_per_episode,n_benign,n_attacked
+claude-haiku-4-5,important_instructions,rule+armor,,"(nan, nan)",0.9375,"(0.9054399012818962, 0.9591803328078562)",,"(nan, nan)",0.1,"(0.07172763997188186, 0.13776243171748725)",0,0.00833138828125,320,0
+claude-haiku-4-5,important_instructions,rule+lock,,"(nan, nan)",0.965625,"(0.9395037038130347, 0.9806992596110589)",,"(nan, nan)",0.0125,"(0.004871372962806259, 0.031694651908612356)",0,0.008373055781250001,320,0
