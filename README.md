@@ -8,7 +8,7 @@ agent reads text written by strangers and can take actions. This repository meas
 workflows, in Portuguese and in English, how much of the protection against indirect prompt injection
 comes from the model itself, from two architectural choices, and from a lightweight detector.
 
-> Status: experiments done (November 2026). Draft write-up: [`docs/post.md`](docs/post.md). Every
+> Status: experiments done (November 2026). Write-up: [`docs/post.md`](docs/post.md). Every
 > number: [`results/SUMMARY.md`](results/SUMMARY.md).
 
 ## Results in brief
