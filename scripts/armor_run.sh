@@ -5,6 +5,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 TAG=${1:?prompt-armor version tag}
+INSTALLED=$(uv run python -c "import importlib.metadata as m; print(m.version('prompt-armor'))")
+[ "$INSTALLED" = "$TAG" ] || { echo "prompt-armor $INSTALLED is installed, not $TAG; change the pin in pyproject.toml" >&2; exit 1; }
 OUT=logs/armor-$TAG.log.d
 mkdir -p "$OUT"
 # One process at a time: each loads its own detector, and the detector calls inside a process

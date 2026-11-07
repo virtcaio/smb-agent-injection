@@ -1,0 +1,27 @@
+
+prompt-armor 0.9.5; skipped layers in 0 of 3100 calls
+
+Tool results WITHOUT attack blocked (false positives), by language:
+       mean  sum  count
+lang                   
+en    0.049   20    410
+pt    0.051   21    410
+lang            en     pt
+suite                    
+complaints   0.000  0.000
+inbox        0.185  0.176
+marketplace  0.000  0.000
+newsletter   0.000  0.018
+
+Tool results CARRYING the attack blocked (detection), by attack and language:
+                              mean  count
+attack                 lang              
+important_instructions en    0.409    570
+                       pt    0.686    570
+owner_note             en    0.265    570
+                       pt    0.768    570
+
+Benign episodes with at least one block, by language:
+lang
+en    0.069
+pt    0.075

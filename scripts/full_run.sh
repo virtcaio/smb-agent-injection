@@ -3,7 +3,7 @@
 # Claude 5.5 models resisted every attack framing in the probes (0 of 2,000+ attacked episodes) and
 # Sonnet 4.6 nearly so (2 of 324), so they run every defense without attack (utility cost) and both
 # attacks without defense. Haiku 4.5, where attacks land (10% to 37%), runs the whole grid. The armor defense runs
-# separately, once prompt-armor 0.9.2 is out. Needs ANTHROPIC_API_KEY in the environment.
+# separately, one prompt-armor version at a time (scripts/armor_run.sh). Needs ANTHROPIC_API_KEY in the environment.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT=${1:-logs/full-run.log.d}

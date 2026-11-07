@@ -2085,7 +2085,7 @@ wheels = [
 
 [[package]]
 name = "prompt-armor"
-version = "0.9.3"
+version = "0.9.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -2100,9 +2100,9 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/01/6f/79825426d8e69f38e301d04197a849c1bb6b9c137437f3af60ccf82dd36a/prompt_armor-0.9.3.tar.gz", hash = "sha256:7d076f81ab6f2f1d064597a7461cbae8f8376aa7be4d232512751e03d930557c", size = 8125718, upload-time = "2026-11-06T21:03:56.285Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/be/17c0ee1d42fa4d8076ccff48a845f4486d524c3969724bbd10554eb2d10a/prompt_armor-0.9.5.tar.gz", hash = "sha256:467f5f9967621e21c50b2fa5d02c1f4743ea9288a6ab4fb147d3292ae3bff821", size = 8163124, upload-time = "2026-11-07T01:51:51.197Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/41/d37a22730acba5f7ffecf50035c1b6265702cec29799733ab3cfffff67ea/prompt_armor-0.9.3-py3-none-any.whl", hash = "sha256:653f2c4ed24e0e7f3dfb873f74a72b6015cccb2f5f983245a4420f1dcee00d96", size = 7789056, upload-time = "2026-11-06T21:03:54.016Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/d8/aadada24be65cd24c363dd904d1d4cc186783b2d46d39208378a00221971/prompt_armor-0.9.5-py3-none-any.whl", hash = "sha256:c75c9612dc75f665e279d8aa281312969d34af38d7766f7aad38ddb565c216b8", size = 7790500, upload-time = "2026-11-07T01:51:48.577Z" },
 ]
 
 [[package]]
@@ -2965,7 +2965,7 @@ requires-dist = [
     { name = "inspect-evals", extras = ["agentdojo"], specifier = ">=0.27.0" },
     { name = "numpy" },
     { name = "pandas" },
-    { name = "prompt-armor", specifier = "==0.9.3" },
+    { name = "prompt-armor", specifier = "==0.9.5" },
     { name = "pyyaml" },
     { name = "scipy" },
 ]

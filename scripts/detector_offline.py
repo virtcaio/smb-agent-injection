@@ -33,11 +33,12 @@ async def trajectory_outputs(suite, task, injection: str | None) -> list[str]:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--attacks", default="important_instructions,owner_note")
-    ap.add_argument("--out", default="results/detector-offline")
+    ap.add_argument("--out", default=None, help="default: results/detector-offline-<installed version>")
     args = ap.parse_args()
     import importlib.metadata as md
 
     version = md.version("prompt-armor")
+    args.out = args.out or f"results/detector-offline-{version}"
     analyze, counter = _armor()
     rows = []
     for name in SUITES:
