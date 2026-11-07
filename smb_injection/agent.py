@@ -9,6 +9,8 @@
 - armor: every tool result goes through the prompt-armor detector; results it BLOCKs are withheld.
 - monitor: a trusted, weaker model (Claude Haiku 5.5) sees the owner's request and each proposed
   side-effect action, and can block it (fail-closed).
+
+Defenses combine with "+", such as "rule+lock": each one applies as it would alone.
 """
 
 from __future__ import annotations
@@ -16,6 +18,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import weakref
 from functools import lru_cache
 from typing import Any
 
@@ -87,9 +90,17 @@ MONITOR_PROMPT = (
 )
 
 
+def components(defense: str) -> set[str]:
+    """The single defenses in a configuration: "rule+lock" -> {"rule", "lock"}."""
+    parts = set(defense.split("+"))
+    if not parts <= set(DEFENSES) or ("none" in parts and len(parts) > 1):
+        raise ValueError(f"defense must be one of {DEFENSES}, or several of them joined with '+'")
+    return parts
+
+
 def system_prompt(suite: Suite, defense: str) -> str:
     text = SYSTEM[suite.lang].format(**suite.meta)
-    if defense == "rule":
+    if "rule" in components(defense):
         text += RULE[suite.lang].format(**suite.meta)
     return text
 
@@ -120,18 +131,18 @@ def _armor():
     return analyze, counter
 
 
-_ARMOR_LOCK: asyncio.Lock | None = None
+# One lock per event loop: an asyncio.Lock is bound to the loop it first waits in, and each
+# eval() call runs its own loop.
+_ARMOR_LOCKS: weakref.WeakKeyDictionary[asyncio.AbstractEventLoop, asyncio.Lock] = weakref.WeakKeyDictionary()
 
 
 async def armor_check(text: str) -> tuple[str, float, int]:
     """One detector call at a time per process. prompt-armor's per-layer 2 s timeout counts the
     wait in its thread pool, so concurrent calls skip layers (fail-open) and measure a
     different detector. Returns the decision, the risk and the number of skipped layers."""
-    global _ARMOR_LOCK
-    if _ARMOR_LOCK is None:
-        _ARMOR_LOCK = asyncio.Lock()
+    lock = _ARMOR_LOCKS.setdefault(asyncio.get_running_loop(), asyncio.Lock())
     analyze, counter = _armor()
-    async with _ARMOR_LOCK:
+    async with lock:
         before = counter.count
         result = await asyncio.to_thread(analyze, text)
         skipped = counter.count - before
@@ -160,8 +171,7 @@ def _event(kind: str, **data: Any) -> None:
 
 @solver
 def smb_agent(defense: str = "none", max_turns: int = 15, monitor_model: str = "anthropic/claude-haiku-5-5", batch: bool = False) -> Solver:
-    if defense not in DEFENSES:
-        raise ValueError(f"defense must be one of {DEFENSES}")
+    parts = components(defense)
 
     async def solve(state: TaskState, generate: Generate) -> TaskState:
         meta = state.metadata
@@ -192,22 +202,22 @@ def smb_agent(defense: str = "none", max_turns: int = 15, monitor_model: str = "
             for call in calls:
                 spec = specs.get(call.function)
                 args = dict(call.arguments or {})
-                result = await _run_call(spec, call.function, args, defense, scope, task.prompt, monitor_model, batch)
+                result = await _run_call(spec, call.function, args, parts, scope, task.prompt, monitor_model, batch)
                 state.messages.append(ChatMessageTool(content=result, tool_call_id=call.id, function=call.function))
         return state
 
     return solve
 
 
-async def _run_call(spec: ToolSpec | None, name: str, args: dict[str, Any], defense: str, scope: dict[str, set[str]], request: str, monitor_model: str, batch: bool) -> str:
+async def _run_call(spec: ToolSpec | None, name: str, args: dict[str, Any], parts: set[str], scope: dict[str, set[str]], request: str, monitor_model: str, batch: bool) -> str:
     if spec is None:
         return f"Error: unknown tool '{name}'."
-    if spec.side_effect and defense == "lock":
+    if spec.side_effect and "lock" in parts:
         target = "*" if spec.target_arg is None else str(args.get(spec.target_arg, "")).strip().lower()
         if target not in scope.get(spec.name, set()):
             _event("lock_block", tool=name, args=args)
             return LOCK_MESSAGE
-    if spec.side_effect and defense == "monitor":
+    if spec.side_effect and "monitor" in parts:
         allowed, reason = await monitor_check(monitor_model, request, spec, args, batch)
         _event("monitor_allow" if allowed else "monitor_block", tool=name, args=args, reason=reason)
         if not allowed:
@@ -219,7 +229,7 @@ async def _run_call(spec: ToolSpec | None, name: str, args: dict[str, Any], defe
     executed = store().get("executed", [])
     executed.append({"tool": name, "args": args})
     store().set("executed", executed)
-    if defense == "armor":
+    if "armor" in parts:
         decision, risk, skipped = await armor_check(result)
         _event("armor", tool=name, decision=decision, risk=round(risk, 3), skipped_layers=skipped)
         if decision == "block":
