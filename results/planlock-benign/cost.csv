@@ -1,0 +1,2 @@
+model,input_tokens,output_tokens,cache_read_tokens,turns,cost_agent,cost_monitor,episodes,total_cost
+claude-haiku-4-5,6416.6609375,334.803125,135.709375,3.2203125,0.008391733828125001,8.399546875000001e-05,640,5.424466750000001
